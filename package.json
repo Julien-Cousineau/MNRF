@@ -1,0 +1,30 @@
+{
+  "name": "mnrfdashboard",
+  "version": "0.0.1",
+  "description": "Web-based dashboard/tool to provide MNRF and emergency managers",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Julien-Cousineau/MNRF.git"
+  },
+  "keywords": [
+    "MNRF",
+    "Dashboard"
+  ],
+  "author": "Julien Cousineau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Julien-Cousineau/MNRF/issues"
+  },
+  "homepage": "https://github.com/Julien-Cousineau/MNRF#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.1",
+    "cors": "^2.8.4",
+    "express": "^4.16.2"
+  }
+}
