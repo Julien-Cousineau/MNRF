@@ -86,3 +86,8 @@ overflow-y: auto;
 .stationtitle {
   margin-top:8px;
 }
+
+.card-image {
+  max-width: 100%;
+  max-height: 100%;
+}

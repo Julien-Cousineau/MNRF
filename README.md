@@ -61,6 +61,18 @@ The JSON file can be sorted by the title attribute. Here's an exmaple of the JSO
 ```JSON
  { "id": "40027637332", "owner": "145447898@N03", "secret": "d5027f8efe", "server": "4616", "farm": 5, "title": "04FC001_Attawapiskat_Rv_20180203150108.jpg", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
 ```
+
+JPG Link Format
+
+https://c1.staticflickr.com/{farm}/{server}/{id}_{secret}_b.jpg
+
+https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg
+
+Title example: 04HA001_ALBANY_RV_20180207200058.jpg
+
+Split "_"
+
+
 ##### Radarsat
 
 

@@ -2,22 +2,6 @@
 function Dashboard(options){
   this.properties ={
     container:'body',
-    rivers:[
-        {id:'albanyriver',title:'Albany River',active:true,stations:[
-                                                                    {title:'Station 1',cards:[{title:'WebCam',type:'webcam',photoid:''},{title:'Time-Series',type:'ts'},{title:'Gauge',type:'gauge'}]},
-                                                                    {title:'Station 2',cards:[{title:'WebCam',type:'webcam',photoid:''},{title:'Time-Series',type:'ts'},{title:'Gauge',type:'gauge'}]}
-                                                                    ]},
-        {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
-                                                                    {title:'Station 1',cards:[{title:'WebCam',type:'webcam',photoid:''},{title:'Time-Series',type:'ts'}]},
-                                                                    ]},
-        {id:'mooseriver',title:'Moose River',active:false,stations:[
-                                                                   {title:'Station 1',cards:[{title:'WebCam',type:'webcam',photoid:''}]}
-                                                                   ]},
-        {id:'winiskriver',title:'Winisk River',active:false,stations:[
-                                                                   {title:'Station 1',cards:[{title:'WebCam',type:'webcam',photoid:''}]},
-                                                                   {title:'Station 2',cards:[{title:'WebCam',type:'webcam',photoid:''}]}
-                                                                   ]},
-      ]
   };
   this.properties=extend(this.properties,options);
   Base.call(this,this.properties);
@@ -74,7 +58,7 @@ Dashboard.prototype = {
     </div>
     `.format(
       this.rivers.map(river=>`<li class="nav-item"><a class="nav-link {2}" id="{0}-tab" data-toggle="tab" role="tab" aria-controls="{0}" aria-selected="true" href="#{0}">{1}</a></li>`.format(river.id,river.title,river.active?'active':'')).join(""),
-      this.rivers.map(river=>`<div class="tab-pane fade {1}" id="{0}" role="tabpanel" aria-labelledby="{0}-tab">{2}</div>`.format(river.id,river.active ?'show active':'',this.content(river)),this).join(""),
+      this.rivers.map(river=>`<div class="tab-pane fade {1}" id="{0}" role="tabpanel" aria-labelledby="{0}-tab" _riverid="{0}">{2}</div>`.format(river.id,river.active ?'show active':'',this.content(river)),this).join(""),
       );
   },
   content:function(river){
@@ -94,24 +78,26 @@ Dashboard.prototype = {
         <h5 class="stationtitle">{0}</h5>
       </div>
      </div>
-      <div class="row">
-        {1}
+      <div class="row" _stationid="{1}">
+        {2}
       </div>
-    `.format(station.title,station.cards.map((card,i)=>this.card(card,i,ncards),this).join(""),)
+    `.format(station.title,station.id,station.cards.map((card,i)=>this.card(card,i,ncards),this).join(""),)
   },
   card:function(card,i,ncards){
     const cols=(i==0)?4:8/(ncards-1);
+    let content=`<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>`;
+    if(card.type=="webcam")content=`<img src="https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg" class="card-image">`;
     return `
     <div class="col-sm-12 col-md-{0}">
       <div class="card">
         <h5 class="card-header">{1}</h5>
-        <div class="card-body">
+        <div class="card-body" _type="{3}">
           <!--<h5 class="card-title">Special title treatment</h5>-->
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+          {2}
         </div>
       </div>
     </div>
-    `.format(cols,card.title)
+    `.format(cols,card.title,content,card.type)
   }
 };
 Object.assign(Dashboard.prototype,Base.prototype);
