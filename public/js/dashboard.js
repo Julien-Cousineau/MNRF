@@ -14,7 +14,7 @@ Dashboard.prototype = {
     <div class="dashboard container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <ul class="nav nav-pills nav-fill">
+          <!--<ul class="nav nav-pills nav-fill">
             <li class="nav-item">
               <a class="nav-link active" href="#">Active</a>
             </li>
@@ -27,7 +27,7 @@ Dashboard.prototype = {
             <li class="nav-item">
               <a class="nav-link disabled" href="#">Disabled</a>
             </li>
-          </ul>
+          </ul>-->
         </div>
       </div>
     </div>
