@@ -1,21 +1,41 @@
 .navbar {
   z-index: 100;
   /*box-shadow: 0 2px 5px rgba(0,0,0,.26);*/
-  
+  padding: .25rem 0.5rem;
+}
+.header .nav-link {
+    display: block;
+    padding: 0.0rem 0.0rem; 
 }
 .centerContainer {
     display: flex;
     align-items: center;
-    height: 100%;
+    /*height: 100%;*/
     width: 100%;
     margin: auto;
 }
-.display-5 {
-    font-size: 2.0rem;
-    font-weight: 300;
+
+.bannerTitle.small {
+    font-size: 0.75rem;
+    font-weight: 500;
+    vertical-align: top;
+}
+.bannerTitle.large {
+    font-size: 1.0rem;
+    font-weight: 500;
+}
+.bannerTitle{
     text-align: center;
     margin: auto;
+    color: #6a6848;
+    display: inline;
 }
+.bannerTitle.center {
+  color: #3f3e20;
+  font-size: 1.5rem;
+}
+.toplogo { height: 30px; }
+.invert { filter: invert(100%); }
 .jumbotron {
   padding: 0.5rem 0.5rem;
   margin-bottom: 0rem;
@@ -52,8 +72,13 @@
 .handle:hover {
   opacity:0.8;
 }
+.jumbotron {
+    background-image: url(../img/MNRF-banner.png);
+    background-repeat: no-repeat;
+    background-position: 0px 15px;
+}
 
-.jumbotroncontainer .jumbotron > label {
+.jumbotroncontainer > label {
   display: inherit;
   margin-bottom: auto;
   opacity:0.6;
@@ -61,19 +86,22 @@
 .jumbotroncontainer > input{
   position:absolute;
   visibility:hidden;
+  margin-top: 0;
 }
 .jumbotroncontainer > input:checked ~ .jumbotron{ /* (the next .div) */
-  transform: translateY(-100%);
+  /*transform: translateY(-100%);*/
+  margin-top: -76px;
 }
-.jumbotroncontainer > input:checked ~ .jumbotron > label::after {
+
+.jumbotroncontainer > input:checked ~ label::after {
   content:'\2913';
 }
-.jumbotroncontainer > .jumbotron > label:hover{
+.jumbotroncontainer > label:hover{
   opacity:0.8;
 }
-.jumbotroncontainer > .jumbotron > label::after {
+.jumbotroncontainer > label::after {
   position:absolute;
-  /*top: 0;*/
+  top: 40px;
   margin-top:1rem;
   margin-right:0.5rem;
   border-radius:50%;
@@ -87,7 +115,6 @@
   line-height: 2.0rem;
   height: 2rem;
   width: 2rem;
-
   background-color:white;
   box-shadow: 0px 0px 3px 2px rgba(0,0,0,.26);
   cursor: pointer;

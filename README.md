@@ -16,6 +16,27 @@ npm install
 ```bash
 npm start
 ```
+## Stations & Rivers
+Albany River
+Attawapiskat River
+Moose River
+Winisk River
+
+## Data Source
+Water Level & Precipitation - 
+Camera Photos -
+Radarsat -
+
+## TODO
+Add map
+Add dashboard and panels
+Create template per river
+Create time-series graph
+Create gauge graph
+...
+
+## Development website
+https://mnrf-jcousineau.c9users.io/
 
 
 

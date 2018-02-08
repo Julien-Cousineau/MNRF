@@ -1,22 +1,29 @@
+/*global $,Base,extend,About*/
 function Header(options){
   this.properties ={
-    container:'',
-    title:'',
-    toplogo:'ontario@2x-print.png',
-    leaf:'',
-    banner:'',
-  } 
-  
+    container:'body',
+    language:'language',
+    titles:'titles',
+    titlel:'titlel',
+    titlec:'titlec',
+    toplogo:'img/ontario@2x-print.png',
+  };
   this.properties=extend(this.properties,options);
-  Base.call(this,oppropertiestions);
+  Base.call(this,this.properties);
+  $(this.container).append(this.html());
+  const about=this.about=new About({parent:options.parent});
+  const self=this;
+  $('#togglelanguague').on('click',()=>self.parent.changeLanguageToggle());
 }    
 Header.prototype = {
     html:function(){
+      const lang=this.parent.language;
+      const keywords=this.parent.keywords;
       return `
         <div class="header">        
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <span class="navbar-brand">
-              <img src=''>
+              <img src='{0}'class="toplogo invert">
             </span>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -24,86 +31,45 @@ Header.prototype = {
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
               <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item">
-                  <a id="homebtn" class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                  <a id="togglelanguague" class="nav-link" href="#" keyword="language" keywordtype="text">{4}</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown link
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </div>
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#AboutModal" keyword="about" keywordtype="text">About</a>
                 </li>
               </ul>
             </div>
           </nav>
           <div class="jumbotroncontainer">
-            <input id="radio-1" type="checkbox" checked>
+            <input id="radio-1" type="checkbox">
             <div class="jumbotron jumbotron-fluid">
               <div class="container-fluid">
-                <div class="row">
-                  <div class="col-sm-12 col-md-5">
+                <div class="row" style="min-height: 60px;">
+                  <div class="col-sm-12 col-md-4 d-none d-md-block">
                     <div class="centerContainer">
-                      <h1 class="display-5">{0}</h1>
+                      <span style="text-align: right;"><h1 class="bannerTitle small" keyword="titles" keywordtype="text">{1}</h1><h1 class="bannerTitle large" keyword="titlel" keywordtype="text">{2}</h1></span>
                     </div>
                   </div>
-                  <div class="col-sm-12 col-md-2 d-none d-md-block">
+                  <div class="col-sm-12 col-md-4">
                     <div class="centerContainer">
-                      <img class="leaf" src='{1}'>
+                      <h1 class="bannerTitle center" keyword="titlec" keywordtype="text">{3}</h1>
                     </div>
                   </div>
-                  <div class="col-sm-12 col-md-5 d-none d-md-block">
+                  <div class="col-sm-12 col-md-4 d-none d-md-block">
                     <div class="centerContainer">
-                      <img class="nrc" src='{2}'>
                     </div>
                   </div>
                 </div>
               </div>
-              <label for="radio-1"></label>
+              
             </div>
+            <label for="radio-1"></label>
           </div>
         </div>
-        `.format(this.title,leaf,nrc)
+        `.format(this.toplogo,keywords[this.titles][lang],keywords[this.titlel][lang],keywords[this.titlec][lang],keywords[this.language][lang])
+    },
+    homebtnclick:function(){
+      
     }
 }
 Object.assign(Header.prototype,Base.prototype);
 Header.prototype.constructor = Header;
-
-    
-    super(extend(_options, options));
-    this.defineProperties();
-    this.render();
-    this.postrender();
-  }
-  render(){$(this.container).append(this.html)}
-  postrender(){
-    const self=this;
-    $('#homebtn').on('click',()=>self.homebtnclick());
-    
-  }
-  homebtnclick(){
-    this.parent.crossfilter.addpoint("M6013459");
-  }
-  defineProperties(){
-      Object.defineProperty(this, 'debug',{  
-           configurable: true,
-           get:()=>{return this.options['debug'];},
-           set:(value)=>{this.options['debug']=value;console.log("here")}
-           });      
-    
-  }
-  print(){  
-    this.debug="myname";
-    console.log(this.debug);
-  }
-  
-  
-}

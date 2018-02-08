@@ -1,0 +1,8 @@
+.dashboard {
+    position: absolute;
+    padding-top: 15px;
+    z-index: -1;
+}
+.jumbotroncontainer > input:checked + .dashboard{ /* (the next .div) */
+  transform: translateY(-100%);
+}
