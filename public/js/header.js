@@ -62,7 +62,7 @@ Header.prototype = {
               </div>
               
             </div>
-            <label for="radio-1"></label>
+            <label for="radio-1" class="noselect"></label>
           </div>
         </div>
         `.format(this.toplogo,keywords[this.titles][lang],keywords[this.titlel][lang],keywords[this.titlec][lang],keywords[this.language][lang])

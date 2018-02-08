@@ -19,6 +19,7 @@ function App(){
   const pointer = function(){return self;}
   const header=this.header=new Header({parent:pointer});
   const dashboard=this.dashboard=new Dashboard({parent:pointer});
+  const map=this.map=new Map({parent:pointer});
 }
 App.prototype = {
   changeLanguageToggle:function() {
