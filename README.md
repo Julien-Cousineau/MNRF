@@ -87,6 +87,8 @@ getStationList (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServi
 
 getTimeseriesList (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=objson&station_id=146399)
 
+
+(http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id=967804042&from=2018-02-10&to=2018-02-11)
 ts_name (???)
 
 

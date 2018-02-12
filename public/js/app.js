@@ -16,12 +16,12 @@ function App(){
     cards:[],
     rivers:[
         {id:'albanyriver',title:'Albany River',active:true,stations:[
-                                                                    {title:'Albany (04HA001)',id:"146399",cards:[{title:'Camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},{title:'Time-Series',type:'ts',ts_id:'967808042'},{title:'Gauge',type:'gauge',ts_id:'967808042'}]},
-                                                                    {title:'Albany (04HA002)',id:"146412",cards:[{title:'Camera @ Fishing',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},{title:'Time-Series',type:'ts',ts_id:'967808042'},{title:'Gauge',type:'gauge',ts_id:'967808042'}]},
-                                                                    {title:'Albany (04HA003)',id:"481782",cards:[{title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},{title:'Time-Series',type:'ts',ts_id:'967808042'},{title:'Gauge',type:'gauge',ts_id:'967808042'}]}
+                                                                    {title:'Albany (04HA001)',id:"146399",cards:[{title:'Camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},{title:'Time-Series',type:'ts'},{title:'Gauge',type:'gauge'}]},
+                                                                    {title:'Albany (04HA002)',id:"146412",cards:[{title:'Camera @ Fishing',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},{title:'Time-Series',type:'ts'},{title:'Gauge',type:'gauge'}]},
+                                                                    {title:'Albany (04HA003)',id:"481782",cards:[{title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},{title:'Time-Series',type:'ts'},{title:'Gauge',type:'gauge'}]}
                                                                     ]},
         {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
-                                                                    {title:'Attawapiskat (04FC001)',id:"146273",cards:[{title:'Camera',type:'webcam',photoid:'04FC001_Attawapiskat_Rv'},{title:'Time-Series',type:'ts',ts_id:'967808042'}]},
+                                                                    {title:'Attawapiskat (04FC001)',id:"146273",cards:[{title:'Camera',type:'webcam',photoid:'04FC001_Attawapiskat_Rv'},{title:'Time-Series',type:'ts'}]},
                                                                     ]},
         {id:'mooseriver',title:'Moose River',active:false,stations:[
                                                                   {title:'Moose (04LG004)',id:"146658",cards:[{title:'Camera',type:'webcam',photoid:'04LG004_Moose_Rv'}]}
