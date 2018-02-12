@@ -5,3 +5,5 @@ wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js
 wget https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css
 wget https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js
 wget https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css
+wget https://cdn.plot.ly/plotly-latest.min.js
+wget https://cdnjs.cloudflare.com/ajax/libs/async/2.6.0/async.min.js

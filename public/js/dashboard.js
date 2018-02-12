@@ -1,4 +1,4 @@
-/*global $,Base,extend*/
+/*global $,Base,extend,Card*/
 function Dashboard(options){
   this.properties ={
     container:'body',
@@ -67,11 +67,10 @@ Dashboard.prototype = {
       {0}
     </div>
     `.format(
-      river.stations.map(station=>this.station(station),this).join(""),
+      river.stations.map(station=>this.station(river,station),this).join(""),
       );
   },
-  station:function(station){
-    const ncards=station.cards.length;
+  station:function(river,station){
     return `
      <div class="row">
       <div class="col-sm-12">
@@ -81,24 +80,14 @@ Dashboard.prototype = {
       <div class="row" _stationid="{1}">
         {2}
       </div>
-    `.format(station.title,station.id,station.cards.map((card,i)=>this.card(card,i,ncards),this).join(""),)
+    `.format(station.title,station.id,station.cards.map(_card=>this.parent.cards.find(card=>card.riverid==river.id && card.stationid==station.id && card.type==_card.type).html(),this).join(""),);
   },
-  card:function(card,i,ncards){
-    const cols=(i==0)?4:8/(ncards-1);
-    let content=`<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>`;
-    if(card.type=="webcam")content=`<img src="https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg" class="card-image">`;
-    return `
-    <div class="col-sm-12 col-md-{0}">
-      <div class="card">
-        <h5 class="card-header">{1}</h5>
-        <div class="card-body" _type="{3}">
-          <!--<h5 class="card-title">Special title treatment</h5>-->
-          {2}
-        </div>
-      </div>
-    </div>
-    `.format(cols,card.title,content,card.type)
-  }
+  // card:function(river,station,card,i,ncards){
+  //   // const cols=(i==0)?4:8/(ncards-1);
+  //   // const _card=new Card({riverid:river.id,stationid:station.id,type:card.type,title:card.title,cols:cols});
+  //   // this.parent.cards.push(_card);
+  //   return _card.html();
+  // }
 };
 Object.assign(Dashboard.prototype,Base.prototype);
 Dashboard.prototype.constructor = Dashboard;

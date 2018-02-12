@@ -23,6 +23,7 @@ Webserver.prototype = {
     });
     // this.server = http.createServer(this.app);
     // this.socketserver = new Socket({parent:this.pointer});
+    
     this.startServer();  
   },
   startServer(){

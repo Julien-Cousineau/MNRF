@@ -15,7 +15,7 @@ if (!String.prototype.format) {
   };
 }
 
-Date.prototype.addHourss = function(h) {    
+Date.prototype.addHours = function(h) {    
    this.setTime(this.getTime() + (h*60*60*1000)); 
    return this;   
 };
@@ -28,9 +28,9 @@ Number.prototype.padZero= function(len, c){
     return String(this).padZero(len,c);
 };
 
-Date.prototype.flickr = function() {
+Date.prototype.yyyymmdd = function() {
    var yyyy = this.getFullYear();
-   var mm = this.getMonth();
+   var mm = this.getMonth() + 1;
    var dd  = this.getDate(); 
    return "{0}-{1}-{2}".format(yyyy,mm.padZero(2),dd.padZero(2));
 };

@@ -32,6 +32,41 @@ Winisk River
 ##### Water Level & Precipitation 
 KISTERS QueryServices (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getRequestInfo&datasource=0&format=html)
 
+**Albany**
+
+station_no: 04HA001
+
+station_id: 146399
+
+**Albany@Fishing**
+
+station_no: 04HA002
+
+station_id: 146412
+
+**Albany@Stooping**
+
+station_no: 04HA003
+
+station_id: 481782
+
+**Attawapiskat**
+
+station_no: 04FC001
+
+station_id: 146273
+
+**Moose**
+
+station_no: 04LG004
+
+station_id: 146658
+
+**Winisk**
+
+station_no: 04DC001
+
+station_id: 146172
 
 ##### Camera Photos
 Flickr (https://www.flickr.com/photos/145447898@N03/)
@@ -43,6 +78,17 @@ Flickr (https://www.flickr.com/photos/145447898@N03/)
 
 ## Methodology
 ##### Water Level & Precipitation 
+
+Plot Template : https://codepen.io/jcousineau/pen/oEZraY
+
+https://github.com/rywhale/kiwisR/tree/master/R
+
+getStationList (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getStationList&datasource=0&format=objson)
+
+getTimeseriesList (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=objson&station_id=146399)
+
+ts_name (???)
+
 
 ##### Camera Photos
 Use flickr API and REST
@@ -70,9 +116,6 @@ https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg
 
 Title example: 04HA001_ALBANY_RV_20180207200058.jpg
 
-Split "_"
-
-
 ##### Radarsat
 
 
@@ -85,18 +128,18 @@ HTTP / HTTPS
 
 
 ## TODO
-Add map
-
-Add dashboard and panels
-
-Create template per river
 
 Create time-series graph
 
 Create gauge graph
 ...
 
+## Issues
 
+This CORS is causing problems http / https. KISTERS only has http :(
+
+## Question
+What ts_name should I use?
 
 
 
