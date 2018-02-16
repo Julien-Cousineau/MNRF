@@ -36,7 +36,27 @@ function App(){
             {title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
-            ]}
+            ]},
+          {title:'Albany above Nottick Island',id:"146386",cards:[
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Kenagami River near Mammamattawa',id:"146478",cards:[
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Pagwachuan River at Hwy 11',id:"146439",cards:[
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Nagagami River at Hwy 11',id:"146426",cards:[
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Little Current River at Percy Lake',id:"146465",cards:[
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
+            ]},            
           ]},
         {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
             {title:'Attawapiskat (04FC001)',id:"146273",cards:[
