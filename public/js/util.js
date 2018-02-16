@@ -2,6 +2,18 @@ const extend = function (dest, src) {
     for (var i in src) dest[i] = src[i];
     return dest;
 };
+const extendExtra = function (dest, src) {
+  for (var i in src){ 
+    if(dest[i]){
+      for (var j in src[i]){
+        dest[i][j]=src[i][j];
+      }
+    } else {
+      dest[i] = src[i];            
+    }
+  }
+  return dest;
+};
 // String formatter
 if (!String.prototype.format) {
   String.prototype.format = function() {

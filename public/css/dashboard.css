@@ -92,6 +92,26 @@ overflow-y: auto;
   max-height: 100%;
 }
 .card-body {
-    padding: 1.0rem;
+    padding: 0.0rem;
     height: 33vh;
+}
+
+.card-body .btn-container {
+    position: absolute;
+    top: 80px;
+    left: 215px;
+    z-index: 1;
+}
+
+.card-body .btn-chart {
+  color: #000000;
+  background-color: #eeeeee;
+  border-color: #eeeeee;
+  padding: 0.1rem 0.1rem;
+  font-size: 12px;
+  min-width: 30px;
+}
+.card-body .btn-chart:hover,.btn-chart.active {
+  background-color: #d4d4d4;
+  border-color: #d4d4d4;
 }

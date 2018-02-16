@@ -23,11 +23,13 @@ Api.prototype = {
   //     },this)
   //   },this)  
   // },
-  getTSValues(id, callback){
-    const from = new Date().addHours(-24*1*1).yyyymmdd();
+  getTSValues(ts, callback){
+    const id = ts.ts_id;
+    const name = ts.ts_name;
+    const from =(name.includes('15.P') || name.includes('15.O') || name.includes('1.P') ||name.includes('15.O'))? new Date().addHours(-24*1*1).yyyymmdd():new Date().addHours(-24*7*4*8).yyyymmdd();
     const to = new Date().yyyymmdd();
     // console.log(from,to)
-    const url = 'https://cors-anywhere.herokuapp.com/http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);
+    const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);
     // const url='data/{0}.json'.format(id)
     this.json(url,callback)
   },  
@@ -42,7 +44,7 @@ Api.prototype = {
     this.json(url,callback)
   },
   getTimeseriesList(id,callback){
-    const url =`https://cors-anywhere.herokuapp.com/http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=objson&station_id={0}`.format(id);
+    const url =`/KiWIS?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=objson&station_id={0}`.format(id);
     // const url='data/gettimeserieslist.json'
     this.json(url,callback)
   },

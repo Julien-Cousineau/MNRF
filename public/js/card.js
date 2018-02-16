@@ -1,4 +1,4 @@
-/*global $,Base,extend*/
+/*global $,Base,extend,Chart*/
 function Card(options){
   this.properties ={
     riverid:'',
@@ -7,6 +7,7 @@ function Card(options){
     title:'',
     cols:'',
     photoid:'',
+    ts_select:'',
     charted:false,
   };
   this.properties=extend(this.properties,options);
@@ -16,7 +17,7 @@ Card.prototype = {
   html:function(){
     const content=(this.type=="webcam") ? this.htmlwebcam():this.htmlts();
     return `
-    <div class="col-sm-12 col-md-{0}">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-{0}">
       <div class="card">
         <h5 class="card-header">{1}</h5>
         <div class="card-body" _type="{3}">
@@ -39,97 +40,81 @@ Card.prototype = {
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"]'.format(this.riverid, this.stationid,'webcam')).removeClass("chart-loading-overlay");
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] .loading-widget-dc'.format(this.riverid, this.stationid,'webcam')).remove();
   },
-  updatetss:function(callback){
+  updatetss:function(){
     const self=this;
-    self.get_ts(function(){
-      (self.charted) ?self.updatewlchart():self.createwlchart();
+    self.getData(function(data){
+      // console.log(data)
+      if(!(self.charted)){self.chart=new Chart(extend(self.properties,{data:data}))}
+      else{self.chart.update(data)};
     });
   },
-  get_ts:function(callback){
+  getData:function(callback){
     const self=this;
-    self.get_tss(function(){
-      const getTSValues = function(ts,_callback){
-        self.parent.api.getTSValues(ts.ts_id,function(err,data){
-          if(err)console.log(data);
-          ts.data=data;
-          _callback();
-        });
-      }
-      async.each(self.tss,getTSValues,function(err){
-        if(err)console.log("Error in async each")
-        callback();  
-      })
-    });
-  },
-  get_tss:function(callback){
-    const self=this;
-    if(!(self.tss)){
-      
-      const ts_select = self.ts_select = [{ts_name:'Q.15',"parametertype_name": "Q"},{ts_name:'LVL.15.P',"parametertype_name": "Stage"},{ts_name:'LVL.15.O',"parametertype_name": "Stage"}];
-      self.parent.api.getTimeseriesList(self.stationid,function(err,data){
-        if(err)console.log(data);
-        
-        self.tss=ts_select.map(select=>data.find(ts=>ts.ts_name==select.ts_name && ts.parametertype_name==select.parametertype_name));
-        console.log(self.tss)
-        callback();
-      });  
-    } else{
-      callback();
+    const station=this.parent.stations.find(station=>station.id==self.stationid);
+    const data=[];
+    const _getTS = function(ts_select,_callback){
+      station.getTSValues(ts_select,function(err,ts){
+        if(err)console.log(ts);
+        data.push(ts);
+        _callback();
+      });
     }
+    async.eachSeries(this.ts_select,_getTS,function(err){
+      if(err)console.log("Error in async each")
+      callback(data);  
+    })
   },
-  createwlchart:function(){
-    console.log(this.tss);
-    var data = [
-      // {
-      //   x: this.tss.find(ts=>ts.ts_name=='WWP_AlarmLevel_High Limit').data[0].data.map(row=>row[0]),
-      //   y: this.tss.find(ts=>ts.ts_name=='WWP_AlarmLevel_High Limit').data[0].data.map(row=>row[1]),
-      //   type: 'scatter'
-      // },
-      {
-        x: this.tss.find(ts=>ts.ts_name=='LVL.15.P').data[0].data.map(row=>row[0]),
-        y: this.tss.find(ts=>ts.ts_name=='LVL.15.P').data[0].data.map(row=>row[1]),
-        type: 'scatter'
-      }
-      ,
-            {
-        x: this.tss.find(ts=>ts.ts_name=='LVL.15.O').data[0].data.map(row=>row[0]),
-        y: this.tss.find(ts=>ts.ts_name=='LVL.15.O').data[0].data.map(row=>row[1]),
-        type: 'scatter'
-      }
-    ];
-    var layout = {
-      autosize: true,
-      // width: 500,
-      height: 200,
-      margin: {
-        l: 30,
-        r: 30,
-        b: 30,
-        t: 10,
-        pad: 0
-      },
-       yaxis: {
-    // domain: [0, 0.75],
-    // range:[0,4],
-    showline:true,
-    mirror:true,
-    title:'Water Level (m)',
-    // nticks:12,
-  },
-      // paper_bgcolor: '#7f7f7f',
-      // plot_bgcolor: '#c7c7c7'
-    };
-    
-    Plotly.newPlot('ts_{0}'.format(this.stationid), data,layout);
-    $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"]'.format(this.riverid, this.stationid,'ts')).removeClass("chart-loading-overlay");
-    $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] .loading-widget-dc'.format(this.riverid, this.stationid,'ts')).remove();
-    this.charted=true
-  },
-  updatewlchart:function(){
-    
-  }
-  
+
   
 };
 Object.assign(Card.prototype,Base.prototype);
 Card.prototype.constructor = Card;
+
+
+
+
+  // get_ts:function(callback){
+  //   const self=this;
+  //   self.get_tss(function(){
+  //     const getTSValues = function(ts,_callback){
+  //       // console.log(ts.ts_id)
+  //       // console.time(ts.ts_id)
+  //       self.parent.api.getTSValues(ts.ts_id,function(err,data){
+  //         // console.timeEnd(ts.ts_id)
+  //         if(err)console.log(data);
+  //         ts.data=data;
+  //         _callback();
+  //       });
+  //     }
+  //     async.eachSeries(self.tss,getTSValues,function(err){
+  //       if(err)console.log("Error in async each")
+  //       callback();  
+  //     })
+  //   });
+  // },
+  // updateTimeseries:function(){
+  //   const self=this;
+  //   const station=this.parent.stations.find(station=>station.id==self.stationid);
+    
+    
+    
+    
+  // },
+  // get_tss:function(callback){
+  //   const self=this;
+  //   if(!(self.tss)){
+      
+  //     // const ts_select = self.ts_select = [{ts_name:'LVL.15.P',"parametertype_name": "Stage"},{ts_name:'LVL.15.O',"parametertype_name": "Stage"},{ts_name:'Q.15',"parametertype_name": "Q"}];
+  //     self.parent.api.getTimeseriesList(self.stationid,function(err,data){
+  //       if(err)console.log(data);
+  //       // console.log(data)
+  //       // const data = JSON.parse(_data)
+  //       // console.log(
+  //       self.tss=self.ts_select.map(select=>data.find(ts=>ts.ts_name==select));
+  //       // console.log(self.tss)
+  //       callback();
+  //     });  
+  //   } else{
+  //     callback();
+  //   }
+  // },

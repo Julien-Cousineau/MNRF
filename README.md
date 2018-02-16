@@ -89,7 +89,25 @@ getTimeseriesList (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=querySe
 
 
 (http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id=967804042&from=2018-02-10&to=2018-02-11)
-ts_name (???)
+Is slow sometimes, for example : http://204.41.16.133/KiWIS/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=csv&ts_id=967958042&from=2018-02-11&to=2018-02-12
+
+
+Albany River above Fishing Creek Island (gauge cam)(No Thresholds)
+
+Albany River near Hat Island (gauge cam) (LVL: 3.3, 4.29, 5.14, 5.9) (Flow:1500, 3000, 4500, 6000)
+
+Stooping River above the Mouth (gauge cam) (No Thresholds)
+
+Albany River above Nottick Island (No Thresholds)
+
+Kenagami River near Mammamattawa (LVL: 23.5, 25, 26.5, 28) (Flow: No Flow thresholds)
+
+Pagwachuan River at Hwy 11 (LVL: 10.98, 12.65, 14.33, 16.0) (Flow: 101.5, 203, 304, 406)
+
+Nagagami River at Hwy 11 (LVL: 2.75, 3.15, 3.45, 3.7, 3.99)(Flow: 40, 135, 200, 250)
+
+Little Current River at Percy Lake (No Thresholds)
+
 
 
 ##### Camera Photos

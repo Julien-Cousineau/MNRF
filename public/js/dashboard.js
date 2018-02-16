@@ -80,7 +80,7 @@ Dashboard.prototype = {
       <div class="row" _stationid="{1}">
         {2}
       </div>
-    `.format(station.title,station.id,station.cards.map(_card=>this.parent.cards.find(card=>card.riverid==river.id && card.stationid==station.id && card.type==_card.type).html(),this).join(""),);
+    `.format(station.title,station.id,station.cards.map(_card=>_card.html(),this).join(""),);
   },
   // card:function(river,station,card,i,ncards){
   //   // const cols=(i==0)?4:8/(ncards-1);
