@@ -26,7 +26,8 @@ Api.prototype = {
   getTSValues(ts, callback){
     const id = ts.ts_id;
     const name = ts.ts_name;
-    const from =(name.includes('15.P') || name.includes('15.O') || name.includes('1.P') ||name.includes('15.O'))? new Date().addHours(-24*1*1).yyyymmdd():new Date().addHours(-24*7*4*8).yyyymmdd();
+    // const from =(name.includes('15.P') || name.includes('15.O') || name.includes('1.P') ||name.includes('15.O'))? new Date().addHours(-24*1*1).yyyymmdd():new Date().addHours(-24*7*4*8).yyyymmdd();
+    const from = new Date().addHours(-24*7*4*8).yyyymmdd();
     const to = new Date().yyyymmdd();
     // console.log(from,to)
     const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);

@@ -127,12 +127,13 @@ Chart.prototype = {
         title:'Water Level (m)'
         // nticks:12,
       },
+      showlegend:true,	
       legend: {
         orientation: "h",
-        x	:	0.75,
-        xanchor	:	'center',
-        y	:	1.15,
-        yanchor	:	'middle',
+        x	:	1,
+        xanchor	:	'right',
+        y	:	1,
+        yanchor	:	'top',
       }
     };
     
@@ -193,12 +194,21 @@ Chart.prototype = {
                   <button class="btn btn-chart" _btn="Q_{0}">Q</button>
                 </div>`.format(this.stationid);
      $('#ts_{0}'.format(this.stationid)).parent().prepend(html);
-     $('[_btn="LVL_{0}"]'.format(this.stationid)).on("click",()=>{self.ts_2('LVL')})
-     $('[_btn="Q_{0}"]'.format(this.stationid)).on("click",()=>{self.ts_2('Q')})
+     $('[_btn="LVL_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('LVL')})
+     $('[_btn="Q_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('Q')})
   },
-  changeData:function(){
-     $('.card-body').addClass("chart-loading-overlay");
-     $('.card-body').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
+  changeData:function(att){
+    // $('.card-body').addClass("chart-loading-overlay");
+    // $('.card-body').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
+    if(att=='LVL'){
+      $('[_btn="LVL_{0}"]'.format(this.stationid)).addClass('active');
+      $('[_btn="Q_{0}"]'.format(this.stationid)).removeClass('active');
+    }
+    if(att=='Q'){
+      $('[_btn="Q_{0}"]'.format(this.stationid)).addClass('active');
+      $('[_btn="LVL_{0}"]'.format(this.stationid)).removeClass('active');
+    } 
+    this.ts_2(att);
     
   },
   getThresholds:function(att){

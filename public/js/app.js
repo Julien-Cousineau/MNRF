@@ -25,33 +25,35 @@ function App(){
           {title:'Albany (04HA001)',id:"146399",cards:[
             {title:'Camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-            {title:'Gauge',type:'gauge'}
+            // {title:'Gauge',type:'gauge'}
             ]},
           {title:'Albany (04HA002)',id:"146412",cards:[
             {title:'Camera @ Fishing',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],thresholds:[{name:'low',LVL:3.3,Q:1500,color:'#c0ca33'}, {name:'mid',LVL:4.29,Q:3000,color:'#fdd835'}, {name:'high',LVL:5.14,Q:4500,color:'#ff9800'}, {name:'ext',LVL:5.9,Q:6000,color:'#f44336'}]},
-            {title:'Gauge',type:'gauge'}
+            // {title:'Gauge',type:'gauge'}
             ]},
           {title:'Albany (04HA003)',id:"481782",cards:[
             {title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},
-            // {title:'Time-Series',type:'ts',charttype:'ts_1',ts_select:['LVL.1.O']},
-            {title:'Gauge',type:'gauge'}
+            {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+            // {title:'Gauge',type:'gauge'}
             ]}
           ]},
         {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
             {title:'Attawapiskat (04FC001)',id:"146273",cards:[
               {title:'Camera',type:'webcam',photoid:'04FC001_Attawapiskat_Rv'},
-              // {title:'Time-Series',type:'ts',charttype:'ts_1',ts_select:['LVL.1.O']},
+              {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
               ]},
             ]},
         {id:'mooseriver',title:'Moose River',active:false,stations:[
             {title:'Moose (04LG004)',id:"146658",cards:[
               {title:'Camera',type:'webcam',photoid:'04LG004_Moose_Rv'},
+              {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
               ]}
             ]},
         {id:'winiskriver',title:'Winisk River',active:false,stations:[
             {title:'Winisk (04DC001)',id:"146172",cards:[
               {title:'Camera',type:'webcam',photoid:'04DC001_Winisk_Rv'},
+              {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
               ]},
             ]},
       ]
