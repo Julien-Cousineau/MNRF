@@ -85,9 +85,13 @@ http://geo.weather.gc.ca/geomet//?LANG=E%26SERVICE=WMS%26VERSION=1.1.1%26REQUEST
 
 
 ##### Radarsat
- (???) 
- 
- Note:GEOJSON/Shapefile would be best instead of images.
+
+Radarsat images are coming directly from MNRF.
+
+TIF and KMZ/KMZ are both images. Radarsat is not a vector file but raster file.
+
+Note:GEOJSON/Shapefile would be best instead of images.
+
 
 ## Methodology
 ##### Water Level & Precipitation 
@@ -121,8 +125,6 @@ Nagagami River at Hwy 11 (LVL: 2.75, 3.15, 3.45, 3.7, 3.99)(Flow: 40, 135, 200, 
 
 Little Current River at Percy Lake (No Thresholds)
 
-
-
 ##### Camera Photos
 Use flickr API and REST
 
@@ -150,6 +152,20 @@ https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg
 Title example: 04HA001_ALBANY_RV_20180207200058.jpg
 
 ##### Radarsat
+
+Initial Appoach: Read directly the tif in Mapbox. Does not work, memory issue in the web browser due to large files. Need to convert to tiles.
+
+First Approach : Change Tif to geojson using rasterio. (Requires a lot of processing to convert to polygons. This approach was abandon)
+
+Second Approach : Raster Tile server using tilestrata and GDAL2Tiles
+
+Tested tilestrata and GDAL2Tiles on workspace called "tilestrata".
+
+_File transfer_
+
+First Idea: Use Azure cloud blob storage. The issue with this one is triggering an event to process the TIF to tiles for the web.
+
+Why not just directly upload to files to the web server using post? Could have a file storage on the web server. I could trigger an event once the upload is done.
 
 
 ## Web Server
