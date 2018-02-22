@@ -30,6 +30,7 @@ Api.prototype = {
     const from = new Date().addHours(-24*7*4*8).yyyymmdd();
     const to = new Date().yyyymmdd();
     // console.log(from,to)
+    // &metadata=true&md_returnfields=ts_unitname
     const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);
     // const url='data/{0}.json'.format(id)
     this.json(url,callback)

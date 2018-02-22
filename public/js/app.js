@@ -22,38 +22,38 @@ function App(){
     cards:[],
     rivers:[
         {id:'albanyriver',title:'Albany River',active:true,stations:[
-          {title:'Albany (04HA001)',id:"146399",cards:[
+          {title:'Albany River near Hat Island (04HA001)',id:"146399",cards:[
             {title:'Camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Albany (04HA002)',id:"146412",cards:[
+          {title:'Albany River above Fishing Creek Island (04HA002)',id:"146412",cards:[
             {title:'Camera @ Fishing',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],thresholds:[{name:'low',LVL:3.3,Q:1500,color:'#c0ca33'}, {name:'mid',LVL:4.29,Q:3000,color:'#fdd835'}, {name:'high',LVL:5.14,Q:4500,color:'#ff9800'}, {name:'ext',LVL:5.9,Q:6000,color:'#f44336'}]},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Albany (04HA003)',id:"481782",cards:[
+          {title:'Stooping River above the Mouth (04HA003)',id:"481782",cards:[
             {title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Albany above Nottick Island',id:"146386",cards:[
+          {title:'Albany above Nottick Island (04GD001)',id:"146386",cards:[
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Kenagami River near Mammamattawa',id:"146478",cards:[
+          {title:'Kenagami River near Mammamattawa (04JG001)',id:"146478",cards:[
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Pagwachuan River at Hwy 11',id:"146439",cards:[
+          {title:'Pagwachuan River at Hwy 11 (04JD005)',id:"146439",cards:[
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Nagagami River at Hwy 11',id:"146426",cards:[
+          {title:'Nagagami River at Hwy 11 (04JC002)',id:"146426",cards:[
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},
-          {title:'Little Current River at Percy Lake',id:"146465",cards:[
+          {title:'Little Current River at Percy Lake (04JF001)',id:"146465",cards:[
             {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
             // {title:'Gauge',type:'gauge'}
             ]},            
@@ -90,6 +90,7 @@ function App(){
   this.dashboard=new Dashboard({parent:pointer,rivers:this.rivers});
   this.map=new Map({parent:pointer});
   this.api=new Api({parent:pointer});
+  
   // this.chart=new Chart({parent:pointer});
   // this.getPhotos();
   this.update();
@@ -114,8 +115,8 @@ App.prototype = {
     this.stations.forEach(station=>station.testTSValues(()=>{console.log("Done!")}));
   },
   update:function(callback){
-    $('.card-body').addClass("chart-loading-overlay");
-    $('.card-body').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
+    $('.dashboard .card-body').addClass("chart-loading-overlay");
+    $('.dashboard .card-body').append(`<div class="loading-widget-dc"><div class="main-loading-icon"></div></div>`);
     
     const self=this;
     self.api.getPhotos(function(err,data){

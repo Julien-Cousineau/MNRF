@@ -71,6 +71,19 @@ station_id: 146172
 ##### Camera Photos
 Flickr (https://www.flickr.com/photos/145447898@N03/)
 
+
+##### Precipitation from EC
+
+WMS service from weather.gc.ca
+
+https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPS.ETA_RT&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true
+http://geo.weather.gc.ca/geomet//?LANG=E%26SERVICE=WMS%26VERSION=1.1.1%26REQUEST=GetLegendGraphic%26STYLE=PRECIPRTMMH%26LAYER=RDPS.ETA_RT%26format=image/png
+
+https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPS.ETA_RN&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true
+http://geo.weather.gc.ca/geomet//?LANG=E%26SERVICE=WMS%26VERSION=1.1.1%26REQUEST=GetLegendGraphic%26STYLE=PRECIPMM%26LAYER=RDPS.ETA_RN%26format=image/png
+
+
+
 ##### Radarsat
  (???) 
  

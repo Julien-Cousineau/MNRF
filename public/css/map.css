@@ -6,3 +6,69 @@
      right:0;
      z-index:-2;
 }
+
+.geocoder {
+    position:absolute;
+    z-index:1;
+    width:260px;
+    left:16px;
+    margin-left:0;
+    top:135px;
+    -webkit-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+.geocoder.checked {
+    top:59px;
+}
+.mapboxgl-ctrl-geocoder { min-width:100%; }
+
+.layers .right {
+    float: right;
+}
+
+
+.layers {
+  position: absolute;
+  top: 168px;
+  /*// height: 140px;*/
+  left: 14px;
+  width: 264px;
+  border-radius:3px;
+  overflow: hidden;
+  -webkit-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+.layers.checked {
+  top: 92px;   
+}
+.layers .lcontainer {
+    /*// width: calc(100% - 12px);*/
+    /*// height: calc(100% - 16px);*/
+    /*background-color: white;*/
+    /*// margin: 2px;*/
+    margin-top: 12px;
+    /*// padding: 8px 0px 0px 0px;*/
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+    pointer-events: auto;
+    /*// box-shadow: 0 0px 4px rgba(0,0,0,.26);*/
+}
+.layers .card-header {
+    padding: 0.25rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    cursor: pointer;
+}
+.layers .card-body {
+    padding: 0.25rem 1.25rem;
+    margin-bottom: 0;
+}
+.layers p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.layers img {
+    float: right;
+}
