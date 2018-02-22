@@ -18,31 +18,36 @@ function Map(options){
     		  'raster-opacity': 0.25,
         },
         ice:{
-          'fill-color':{
-            property: 'raster_val',
-            stops: [
-             [0.0, 'rgba(0,0,0,0)'],
-             [1.0, 'red'],
-             [2.0, 'blue'],
-             [3.0, 'green'],
-             [4.0, 'yellow'],
-             [5.0, 'orange'],
-             [6.0, 'white'],
-             [7.0, '#e55e5e']
-             ]
-          }
+    		  'raster-opacity': 1,
         },
+        // ice:{
+        //   'fill-color':{
+        //     property: 'raster_val',
+        //     stops: [
+        //     [0.0, 'rgba(0,0,0,0)'],
+        //     [1.0, 'red'],
+        //     [2.0, 'blue'],
+        //     [3.0, 'green'],
+        //     [4.0, 'yellow'],
+        //     [5.0, 'orange'],
+        //     [6.0, 'white'],
+        //     [7.0, '#e55e5e']
+        //     ]
+        //   }
+        // },
       },
       sources:[//All data sources
         {id:"stations",options:{type:"geojson",data:'data/stations.geojson'}},
         {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPS.ETA_RN&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
-        {id:"ice",options:{type:"geojson",data:'data/ice.geojson'}},
+        {id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/RiverIceBreakupClassification_ON_AlbanyRiver_20170509_114458/{z}/{x}/{y}/tile.png']}},
+        // {id:"ice",options:{type:"geojson",data:'data/ice.geojson'}},
         // {id:"radarsat",options:{type:"image", url:'data/river.png',coordinates:[[-83.5458730875107,53.1986526149143],[-80.9045446620555,53.1986526149143],[-80.9045446620555,51.5953806566912],[-83.5458730875107,51.5953806566912]]}},
       ],
       layers:{//All layers - paint and filter are default values. This can change depending on the developer and client selection
         weather:{id: 'weather',type: 'raster',source: 'weather'},
         stations:{id: 'stations',type: 'circle',source: 'stations'},
-        ice:{id: 'ice',type: 'fill',source: 'ice'},
+        ice:{id: 'ice',type: 'raster',source: 'ice'},
+        // ice:{id: 'ice',type: 'fill',source: 'ice'},
         // radarsat:{id: 'radarsat',type: 'raster',source: 'radarsat'},
       },
     
@@ -85,6 +90,7 @@ Map.prototype = {
      $(this).prev().find('i').toggleClass("fa-chevron-down fa-chevron-up")
     });
     $('#precip_slider').on('change', function () {self.changePrecipOpacity($(this ).val());});
+    $('#ice_slider').on('change', function () {self.changeIceOpacity($(this ).val());});
     
     $('.layers input[name="basemapradio"]').on("click",function(){self.setStyle($(this).attr("_value"))});
   },
@@ -98,6 +104,12 @@ Map.prototype = {
     this.paint.weather['raster-opacity']=opacity;
     $("#precip_img").css('opacity', opacity);
     this.map.setPaintProperty('weather','raster-opacity',opacity);
+  },
+  changeIceOpacity:function(value){
+    const opacity = value*0.01;
+    this.paint.ice['raster-opacity']=opacity;
+    $("#ice_img").css('opacity', opacity);
+    this.map.setPaintProperty('ice','raster-opacity',opacity);    
   },
   createMap:function(){
     const self=this;
@@ -145,10 +157,10 @@ Map.prototype = {
           <div class="card mb-0">
             <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne"><a class="card-title">Basemap</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseOne" class="card-body collapse" data-parent="#accordion" >{0}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><a class="card-title">Precipitation</a><span class="right"><i class="fas fa-chevron-up"></i></span></div>
-              <div id="collapseTwo" class="card-body collapse show" data-parent="#accordion0" >{1}</div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><a class="card-title">Precipitation</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div id="collapseTwo" class="card-body collapse" data-parent="#accordion0" >{1}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title">RadarSat</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" ><p>Three</p></div>
+              <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" >{2}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title">Weather Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><p>Three</p></div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseGauge"><a class="card-title">Gauge Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
@@ -158,22 +170,22 @@ Map.prototype = {
         </div>
       </div>
     </div>
-    `.format(this.basemaphtml(),this.preciphtml());
+    `.format(this.basemaphtml(),this.opacitylegendhtml('precip','RDPS.ETA_RN'),this.opacitylegendhtml('ice','icelegend'));
   },
-  preciphtml:function(){
+  opacitylegendhtml:function(name,img){
     return `
     <div class="row">
       <div class="col-sm-5">
         <p>Opacity</p>
       </div>
       <div class="col-sm-7">
-        <input type="range" min="1" max="100" value="25" class="slider" id="precip_slider">
+        <input type="range" min="1" max="100" value="25" class="slider" id="{0}_slider">
       </div>
       <div class="col-sm-12">
-        <img src="data/RDPS.ETA_RN.png" id="precip_img">
+        <img src="img/{1}.png" id="{0}_img">
       </div>
     </div>
-    `
+    `.format(name,img)
   }
    
 };
