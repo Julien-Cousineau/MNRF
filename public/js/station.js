@@ -61,6 +61,12 @@ Station.prototype = {
     });
  
   },
+  getCurrentValue:function(ts_name){//'LVL.1.O'
+    const ts = this.tsl.find(ts=>ts.ts_name==ts_name);
+    const x=ts.data.data[0].data.map(row=>row[0]);
+    const y=ts.data.data[0].data.map(row=>row[1]);
+    return y[0];
+  },
   testTSValues:function(callback){
     const self=this;
     this.getTimeseriesList(function(){
@@ -80,10 +86,6 @@ Station.prototype = {
         console.log(JSON.stringify({title:self.title,active:array}))
         callback();  
       })
-       
-    
-       
-      
     })
    
     

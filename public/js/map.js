@@ -2,6 +2,7 @@
 function Map(options){
   this.properties ={
       id:'map',
+      radarlist:false,
       accessToken:'pk.eyJ1Ijoic2ZlcmciLCJhIjoiY2l6OHF4eG85MDBwcTMybXB5dTY0MzlhNCJ9.Mt1hpCCddMlSvDiCtOQiUA',
       center:[-85.00,50.0],
       zoom:5,
@@ -11,42 +12,23 @@ function Map(options){
       geocoder:true,
       style:'mapbox://styles/mapbox/light-v9',
       paint:{ // Default paint values for Mapbox
-        stations:{
-    		  'circle-color': 'blue',
-        },
-        weather:{
-    		  'raster-opacity': 0.25,
-        },
         ice:{
     		  'raster-opacity': 1,
         },
-        // ice:{
-        //   'fill-color':{
-        //     property: 'raster_val',
-        //     stops: [
-        //     [0.0, 'rgba(0,0,0,0)'],
-        //     [1.0, 'red'],
-        //     [2.0, 'blue'],
-        //     [3.0, 'green'],
-        //     [4.0, 'yellow'],
-        //     [5.0, 'orange'],
-        //     [6.0, 'white'],
-        //     [7.0, '#e55e5e']
-        //     ]
-        //   }
-        // },
       },
+      
       sources:[//All data sources
         {id:"stations",options:{type:"geojson",data:'data/stations.geojson'}},
         {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPS.ETA_RN&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
-        {id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/RiverIceBreakupClassification_ON_AlbanyRiver_20170509_114458/{z}/{x}/{y}.png']}},
+        // {id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/RiverIceBreakupClassification_ON_AlbanyRiver_20170509_114458/{z}/{x}/{y}.png']}},
         // {id:"ice",options:{type:"geojson",data:'data/ice.geojson'}},
         // {id:"radarsat",options:{type:"image", url:'data/river.png',coordinates:[[-83.5458730875107,53.1986526149143],[-80.9045446620555,53.1986526149143],[-80.9045446620555,51.5953806566912],[-83.5458730875107,51.5953806566912]]}},
       ],
       layers:{//All layers - paint and filter are default values. This can change depending on the developer and client selection
-        weather:{id: 'weather',type: 'raster',source: 'weather'},
-        stations:{id: 'stations',type: 'circle',source: 'stations'},
-        ice:{id: 'ice',type: 'raster',source: 'ice'},
+        weather:{id: 'weather',type: 'raster',source: 'weather',paint:{'raster-opacity': 0.25}},
+        stations:{id:'stations',type: 'circle',source: 'stations',paint:{'circle-radius':5,'circle-color': 'white','circle-stroke-width':3,'circle-stroke-color':{property:'condition',stops:[[-1,'black'],[0,'green'],[1,'#c0ca33'],[2,'#fdd835'],[3,'#ff9800'],[4,'#f44336']]}}},
+        stationsl:{id:'stationsl',type: 'symbol',source: 'stations',paint:{'text-color': 'black'},layout:{'text-size':12,'text-field': '{station_name}','text-anchor':'top-left','text-offset':[0,0.5],"text-allow-overlap":true,"text-ignore-placement":false,"text-optional":false,"text-max-width":32,}},
+        // ice:{id: 'ice',type: 'raster',source: 'ice'},
         // ice:{id: 'ice',type: 'fill',source: 'ice'},
         // radarsat:{id: 'radarsat',type: 'raster',source: 'radarsat'},
       },
@@ -55,13 +37,16 @@ function Map(options){
   this.properties=extend(options,this.properties);
   Base.call(this,this.properties);
   
-  this.layers.stations.paint=this.paint.stations; // Set paint
-  this.layers.weather.paint=this.paint.weather; // Set paint
-  this.layers.ice.paint=this.paint.ice; // Set paint
+ 
+  // this.layers.stationsl.layout=this.layouts.stationsl;
+  // this.layers.stationsl.paint=this.paint.stationsl; // Set paint  
+  // this.layers.weather.paint=this.paint.weather;
+  // Set paint
+  // this.layers.ice.paint=this.paint.ice; // Set paint
   
   $(this.container).append(this.html());
   $(this.container).append(this.layerGUIhtml());
-  this.createRadarList();
+  
   this.geocoderHeader();
   
   this.createMap();
@@ -99,17 +84,21 @@ Map.prototype = {
     this.map.setStyle('mapbox://styles/mapbox/' + id + '-v9');
   },
   createRadarList:function(){
-    const self=this;
-    const rivername = 'AlbanyRiver';
-    this.getRadarList(function(_list){
-      const list = _list.filter(item=>item.river==rivername);
-      const html = `<div class="row"><div class="col-sm-12">{0}</div></div>`.format(self.dropdownMenu('dradar',list,"Select",'radar'))
-      $('#collapseRadar').prepend(html);  
-    });
+    if(!this.radarlist){
+      const self=this;
+      const rivername = 'AlbanyRiver';
+      this.getRadarList(function(_list){
+        const list = _list.filter(item=>item.river==rivername);
+        const html = `<div class="row"><div class="col-sm-12">{0}</div></div>`.format(self.dropdownMenu('dradar',list,"Select",'radar'));
+        $('#collapseRadar').prepend(html);  
+        self.dropdownMenuFunc('dradar');
+        self.changeIceLayer(list[0].name);
+        self.radarlist=true;
+      });
+    }
     
   },
   getRadarList:function(callback){
-    console.log(this.parent)
     this.parent.api.getRadarList(function(err,list){
       if(err)console.log(list);
       
@@ -121,16 +110,27 @@ Map.prototype = {
         const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
               hour=timestr.substr(0,2),
               date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
-        return {river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+        return {name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
       }).sort(function(a,b){return b.date - a.date;});
       callback(newlist);
     });
   },
   changePrecipOpacity:function(value){
     const opacity = value*0.01;
-    this.paint.weather['raster-opacity']=opacity;
+    // this.paint.weather['raster-opacity']=opacity;
     $("#precip_img").css('opacity', opacity);
     this.map.setPaintProperty('weather','raster-opacity',opacity);
+  },
+  changeIceLayer:function(id){
+    if(!this.sources.find(item=>item.id=='ice')){this.sources.push({id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/' + id +'/{z}/{x}/{y}.png']}},);}
+    else {const ice=this.sources.find(item=>item.id=='ice');ice.options.tiles=['gis/' + id +'/{z}/{x}/{y}.png'];}
+    if(!this.layers.ice)this.layers['ice']={id: 'ice',type: 'raster',source: 'ice',paint:this.paint.ice};
+    
+    if(this.map.getLayer('ice'))this.map.removeLayer('ice');
+    if(this.map.getSource('ice'))this.map.removeSource('ice');
+    
+    this.map.addSource('ice',this.sources.find(item=>item.id=='ice').options);
+    this.map.addLayer(this.layers['ice']);
   },
   changeIceOpacity:function(value){
     const opacity = value*0.01;
@@ -158,25 +158,42 @@ Map.prototype = {
     
    },
   loadMap:function(){
-    this.sources.forEach(function(source){this.map.addSource(source.id, source.options);},this);
-   for(let i in this.layers){
-      const layer = (this.map.getLayer('aeroway-taxiway'))?'aeroway-taxiway':'';
-      this.map.addLayer(this.layers[i], layer);
-      console.log(this.layers[i])
-        
-    }
-    // this.loadLayers();
-   },
-  // loadLayers:function(){
-   
-  // },
+    const self=this;
+    // this.sources.forEach(function(source){this.map.addSource(source.id, source.options);},this);
+    async.each(self.sources, function(source, callback) {
+      if(source.options.type=="geojson" && typeof source.options.data=="string"){
+        self.parent.api.json(source.options.data,function(err,data){
+          if(err) console.log('Async failed in loadMap');
+          source.options.data = data;
+          self.map.addSource(source.id, source.options)
+          callback();
+        })
+      } else {self.map.addSource(source.id, source.options);callback();}
+    
+    }, function(err) {
+      // if any of the file processing produced an error, err would equal that error
+      if( err ) console.log('Async failed in loadMap');
+      for(let i in self.layers){
+        const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
+        self.map.addLayer(self.layers[i], layer);
+      }
+      self.createRadarList(); 
+    });
+  },
+  
+  changeStationColor:function(station_id,condition){
+    const features=this.sources.find(item=>item.id='stations').options.data.features;
+    const station = features.find(feature=>feature.properties.stationid==station_id);
+    station.properties.condition=condition;
+    this.map.getSource('stations').setData(this.sources);
+  },
   basemaphtml:function(){
     const basemaps=this.basemaps;
     return basemaps.map(basemap=>`<div class="radio"><label><input type="radio" name="basemapradio" _value={0} {1}>{0}</label></div>`.format(basemap.id,(basemap.active)?'checked':'')).join("");
   },
   dropdownMenu:function(name,_list,title,tooltip){
     _list[0].active=true;
-    let list=_list.map(item=>`<li class="{2}"><a href="#" _id="{0}" keyword="{1}" keywordType="text">{0}</a></li>`.format(item.id,item.keyword,item.active?'active':'')).join("");
+    let list=_list.map(item=>`<li class="{2}"><a href="#" _id="{0}" keyword="{1}" keywordType="text">{0}</a></li>`.format(item.name,item.keyword,item.active?'active':'')).join("");
     let ul = `<ul class="dropdown-menu dropdown-menu-side" id="ul_{0}">{1}</ul>`.format(name,list);
     let html =`<div class="btn-group dropright float-right">
                 <button type="button" class="btn btn-secondary dropdown-toggle radarbtn" data-toggle="dropdown" data-offset="0px,22px" aria-haspopup="true" aria-expanded="false">
@@ -186,6 +203,16 @@ Map.prototype = {
                </div>`.format(ul,title,tooltip);               
     return html;
   },
+ dropdownMenuFunc:function(name){
+    const self=this;
+    $("#ul_{0} li a".format(name)).on("click",function(){
+      $("#ul_{0} li".format(name)).removeClass("active");
+      $(this).parent().addClass("active");
+      var _id = $(this).attr('_id');
+      
+      self.changeIceLayer(_id);
+    });
+  },  
   layerGUIhtml:function(){
     return `
     <div class="geocoder"></div>

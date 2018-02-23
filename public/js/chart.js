@@ -11,7 +11,6 @@ function Chart(options){
 }
 Chart.prototype = {
   get minmaxX(){
-    if(!(this.thresholds))return console.log('Chart does not contain any thresholds');
     const ts = this.data.find(ts=>ts.ts_name=='LVL.15.P' || ts.ts_name=='LVL.15.O'|| ts.ts_name=='LVL.1.O');
     if(!(ts))return console.log('Chart does not contain LVL');
     
@@ -212,10 +211,12 @@ Chart.prototype = {
     
   },
   getThresholds:function(att){
-    if(!(this.thresholds) || this.thresholds.length==0)return [];
+    const station = this.parent.stations.find(station=>station.id==this.stationid);
+    // console.log(station,this.stationid)
+    if(!(station.thresholds) || station.thresholds.length==0)return [];
     let array=[];
-    for(let i=0,n=this.thresholds.length;i<n;i++){
-      const threshmin= this.thresholds[i];
+    for(let i=0,n=station.thresholds.length;i<n;i++){
+      const threshmin= station.thresholds[i];
       // const threshmax= this.thresholds[i+1];
       const min = this.minmaxX[0];
       const max = this.minmaxX[1];
