@@ -93,7 +93,7 @@ function App(){
   
   // this.chart=new Chart({parent:pointer});
   // this.getPhotos();
-  this.update();
+  // this.update();
   // this.getActiveTS();
   
 }

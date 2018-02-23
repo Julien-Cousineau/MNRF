@@ -5,14 +5,15 @@ const express = require('express');
 const cors = require('cors');
 const compress = require('compression');
 const bodyParser = require('body-parser');
+const util = require('./util');
 // const request = require("request");
 
 // const  reqq = require('req-fast');
 
-const tilestrata = require('tilestrata');
-const strata = tilestrata();
-const disk = require('tilestrata-disk');
-
+// const tilestrata = require('tilestrata');
+// const strata = tilestrata();
+// const disk = require('tilestrata-disk');
+const rastertiles = require('./rastertiles')
 
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
@@ -77,10 +78,10 @@ Webserver.prototype = {
     this.uploadIce();
     this.getLayers();
     
-    this.app.use(tilestrata.middleware({
-        server: strata,
-        prefix: '/gis'
-    }));
+    // this.app.use(tilestrata.middleware({
+    //     server: strata,
+    //     prefix: '/gis'
+    // }));
     
     this.startServer();  
   },
@@ -156,27 +157,7 @@ Webserver.prototype = {
     this.getList().forEach(layer=>this.addLayer(layer),this);
   },
   addLayer:function(name){
-    strata.layer(name)
-          .route('tile.png')
-        //   .use(disk.provider('./tiles/{z}/{x}/{y}.png'))
-        .use(disk.cache({path: function(tile) {
-            // console.log(tile)
-        // console.log(path.resolve(ICETILES,'{0}/{1}/{2}/{3}.png'.format(name,tile.z,tile.x,tile.y)))
-        return path.resolve(ICETILES,'{0}/{1}/{2}/{3}.png'.format(name,tile.z,tile.x,tile.y)); 
-        // return './tiles/RiverIceBreakupClassification_ON_AlbanyRiver_20170502_231318/' + tile.z + '/' + tile.x + '/' + tile.y + ".png";
-    }}));
+    this.app.use('/gis/', rastertiles(name));
   }  
 };
-// String formatter
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
-}
 new Webserver();
