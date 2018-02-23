@@ -85,11 +85,11 @@ function App(){
   this.stations = this.createStations();
   // this.cards=this.createCards();
   
-  
+  this.api=new Api({parent:pointer});
   this.header=new Header({parent:pointer});
   this.dashboard=new Dashboard({parent:pointer,rivers:this.rivers});
   this.map=new Map({parent:pointer});
-  this.api=new Api({parent:pointer});
+  
   
   // this.chart=new Chart({parent:pointer});
   // this.getPhotos();
@@ -103,6 +103,7 @@ App.prototype = {
     this.language= (this.language==='en') ? 'fr':'en';
     this.changeLabels();
   },
+  
   changeLabels:function() {
     const self=this;
     $("*[keyword]").each(function(){

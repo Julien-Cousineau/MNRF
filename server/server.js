@@ -45,44 +45,24 @@ Webserver.prototype = {
     app.get('/KiWIS', (req, res) => {
       const url=`http://204.41.16.133/KiWIS/` + req.originalUrl;
       
-      console.time(req.originalUrl)
+      console.time(req.originalUrl);
       http.get(url, (_res) => {
-        
         let rawData = '';
         _res.on('data', (chunk) => { rawData += chunk; });
         _res.on('end', () => {
             // res.setHeader('Content-Type', 'application/csv');
             res.send(rawData);
-            console.timeEnd(req.originalUrl)
+            console.timeEnd(req.originalUrl);
         });
       }).on('error', (e) => {
         console.error(`Got error: ${e.message}`);
       });
-      // reqq({url:url,dataType:'json'}).pipe(res)
-      
-      // request.get(url,function(error,response,body){
-      //   console.log('error:', error); // Print the error if one occurred
-      //   console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-      //   console.log('body:', body); // Print the HTML for the Google homepage.
-      // })
-      
-      
-      // request.get(url, (error, response, body) => {
-      //   res.send
-      // })
-      
     });
     // this.server = http.createServer(this.app);
     // this.socketserver = new Socket({parent:this.pointer});
     this.appgetList();
     this.uploadIce();
     this.getLayers();
-    
-    // this.app.use(tilestrata.middleware({
-    //     server: strata,
-    //     prefix: '/gis'
-    // }));
-    
     this.startServer();  
   },
   startServer(){
@@ -93,12 +73,11 @@ Webserver.prototype = {
   },
   appgetList:function(){
     const self=this;
-    this.app.get('/getList', (req, res) => {
-      if(!req.query.key)return res.status(400).send('Access key is required');
-      if(req.query.key !=KEY)return res.status(400).send('Incorrect access key');
-      const list = self.getList();
+    this.app.get('/getradarlist', (req, res) => {
+      // if(!req.query.key)return res.status(400).send('Access key is required');
+      // if(req.query.key !=KEY)return res.status(400).send('Incorrect access key');
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).send(JSON.stringify(list));
+      res.status(200).send(JSON.stringify(self.getList()));
     });
   },
   uploadIce:function(){

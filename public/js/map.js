@@ -52,7 +52,7 @@ function Map(options){
       },
     
   };
-  this.properties=extend(this.properties,options);
+  this.properties=extend(options,this.properties);
   Base.call(this,this.properties);
   
   this.layers.stations.paint=this.paint.stations; // Set paint
@@ -61,6 +61,7 @@ function Map(options){
   
   $(this.container).append(this.html());
   $(this.container).append(this.layerGUIhtml());
+  this.createRadarList();
   this.geocoderHeader();
   
   this.createMap();
@@ -95,9 +96,35 @@ Map.prototype = {
     $('.layers input[name="basemapradio"]').on("click",function(){self.setStyle($(this).attr("_value"))});
   },
   setStyle:function(id){
-    // const self=this;
-    // this.map.once('style.load', function() {self.loadLayers()});
     this.map.setStyle('mapbox://styles/mapbox/' + id + '-v9');
+  },
+  createRadarList:function(){
+    const self=this;
+    const rivername = 'AlbanyRiver';
+    this.getRadarList(function(_list){
+      const list = _list.filter(item=>item.river==rivername);
+      const html = `<div class="row"><div class="col-sm-12">{0}</div></div>`.format(self.dropdownMenu('dradar',list,"Select",'radar'))
+      $('#collapseRadar').prepend(html);  
+    });
+    
+  },
+  getRadarList:function(callback){
+    console.log(this.parent)
+    this.parent.api.getRadarList(function(err,list){
+      if(err)console.log(list);
+      
+      const newlist = list.map(name=>{
+        const array = name.split("_");
+        const river = array[2],
+              datestr =array[3],
+              timestr = array[4];
+        const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
+              hour=timestr.substr(0,2),
+              date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
+        return {river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+      }).sort(function(a,b){return b.date - a.date;});
+      callback(newlist);
+    });
   },
   changePrecipOpacity:function(value){
     const opacity = value*0.01;
@@ -146,6 +173,18 @@ Map.prototype = {
   basemaphtml:function(){
     const basemaps=this.basemaps;
     return basemaps.map(basemap=>`<div class="radio"><label><input type="radio" name="basemapradio" _value={0} {1}>{0}</label></div>`.format(basemap.id,(basemap.active)?'checked':'')).join("");
+  },
+  dropdownMenu:function(name,_list,title,tooltip){
+    _list[0].active=true;
+    let list=_list.map(item=>`<li class="{2}"><a href="#" _id="{0}" keyword="{1}" keywordType="text">{0}</a></li>`.format(item.id,item.keyword,item.active?'active':'')).join("");
+    let ul = `<ul class="dropdown-menu dropdown-menu-side" id="ul_{0}">{1}</ul>`.format(name,list);
+    let html =`<div class="btn-group dropright float-right">
+                <button type="button" class="btn btn-secondary dropdown-toggle radarbtn" data-toggle="dropdown" data-offset="0px,22px" aria-haspopup="true" aria-expanded="false">
+                  {1}
+                </button>
+                  {0}
+               </div>`.format(ul,title,tooltip);               
+    return html;
   },
   layerGUIhtml:function(){
     return `
