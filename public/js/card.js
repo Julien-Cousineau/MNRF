@@ -40,32 +40,15 @@ Card.prototype = {
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"]'.format(this.riverid, this.stationid,'webcam')).removeClass("chart-loading-overlay");
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] .loading-widget-dc'.format(this.riverid, this.stationid,'webcam')).remove();
   },
-  updatetss:function(){
-    const self=this;
-    self.getData(function(data){
-      // console.log(data)
-      if(!(self.charted)){self.chart=new Chart(extend(self.properties,{data:data}))}
-      else{self.chart.update(data)};
-    });
+  updatetss:async function(){
+    const stationid = this.stationid;
+    const station=this.parent.stations.find(station=>station.id==stationid);
+    const data= await Promise.all(this.ts_select.map(async (ts_select) => {
+      return await station.getTSValues(ts_select);
+    }));
+    if(!(this.charted)){this.chart=new Chart(extend(this.properties,{data:data}))}
+    else{this.chart.update(data)}
   },
-  getData:function(callback){
-    const self=this;
-    const station=this.parent.stations.find(station=>station.id==self.stationid);
-    const data=[];
-    const _getTS = function(ts_select,_callback){
-      station.getTSValues(ts_select,function(err,ts){
-        if(err)console.log(ts);
-        data.push(ts);
-        _callback();
-      });
-    }
-    async.eachSeries(this.ts_select,_getTS,function(err){
-      if(err)console.log("Error in async each")
-      callback(data);  
-    })
-  },
-
-  
 };
 Object.assign(Card.prototype,Base.prototype);
 Card.prototype.constructor = Card;

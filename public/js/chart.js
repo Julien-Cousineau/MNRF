@@ -84,13 +84,26 @@ Chart.prototype = {
   getTsLayout:function(options,properties){
     const height = $('#ts_{0}'.format(this.stationid)).parent().height();
     const width = $('#ts_{0}'.format(this.stationid)).parent().width();
+    const label=new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)[1];
     let layout =  {
+      annotations:[
+        {
+          xref: 'paper',
+          yref: 'paper',
+          x: 0,
+          xanchor: 'left',
+          y: 1,
+          yanchor: 'top',
+          text: label,
+          showarrow: false
+        }
+      ],
       autosize:true,
       width	:	width,
       height: height,
       margin: {
-        l:40,
-        r:10,
+        l:60,
+        r:60,
         t:60,
         b:10,
         pad:0,
@@ -132,7 +145,8 @@ Chart.prototype = {
         x	:	1,
         xanchor	:	'right',
         y	:	1,
-        yanchor	:	'top',
+        yanchor	:	'bottom',
+        bgcolor: 'rgba(0,0,0,0)',
       }
     };
     
@@ -186,6 +200,7 @@ Chart.prototype = {
   },
   // style="stroke:rgb(68,68,68);stroke-opacity:1;fill:rgb(238,238,238);fill-opacity:1;stroke-width:0px;"
   // style="font-family:&quot;Open Sans&quot;,verdana,arial,sans-serif;font-size:12px;fill:rgb(68,68,68);fill-opacity:1;white-space:pre;"
+  
   createbtns:function(){
     const self=this;
     const html=`<div class="btn-container">

@@ -23,47 +23,58 @@ Api.prototype = {
   //     },this)
   //   },this)  
   // },
-  getTSValues(ts, callback){
+  getTSValues:async function(ts){
     const id = ts.ts_id;
     const name = ts.ts_name;
     // const from =(name.includes('15.P') || name.includes('15.O') || name.includes('1.P') ||name.includes('15.O'))? new Date().addHours(-24*1*1).yyyymmdd():new Date().addHours(-24*7*4*8).yyyymmdd();
     const from = new Date().addHours(-24*7*4*8).yyyymmdd();
+    // const from = new Date().addHours(-24*7).yyyymmdd();
     const to = new Date().yyyymmdd();
     // console.log(from,to)
     // &metadata=true&md_returnfields=ts_unitname
     const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);
     // const url='data/{0}.json'.format(id)
-    this.json(url,callback);
+    
+    const data = await this.json(url);
+    // const offset=new Date().getTimezoneOffset()/60;
+    data[0].data=data[0].data.map(row=>[new Date(row[0]),row[1]])
+    return data;
   },  
-  getPhotoInfo(id, callback){
+  getPhotoInfo:async function(id){
     const url = 'https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=87920266b5ecd6a632f152ec4873533d&photo_id={0}&format=json&nojsoncallback=1'.format(id);
-    this.json(url,callback);
+    return await this.json(url);
   },
-  getPhotos(callback){
+  getPhotos:async function(){
     const date = new Date().addHours(-24*1*1).yyyymmdd(); // 24hours x 1 days x 1 week 
     const url ='https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=87920266b5ecd6a632f152ec4873533d&user_id=145447898%40N03&min_upload_date={0}&per_page=500&format=json&nojsoncallback=1'.format(date) ;
     // const url='data/getphotos.json'
-    this.json(url,callback);
+    return await this.json(url);
   },
-  getTimeseriesList(id,callback){
+  getTimeseriesList:async function(id){
     const url =`/KiWIS?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=objson&station_id={0}`.format(id);
     // const url='data/gettimeserieslist.json'
-    this.json(url,callback);
+    return await this.json(url);
   },
-  getRadarList:function(callback){
+  getRadarList:async function(){
     const url ='/getradarlist';
-    this.json(url,callback);
+    return await this.json(url);
   },
-  json:function(url,callback){
-    $.ajax(url,{
-      dataType:'json',
-      success:function(data){
-        callback(false,data);
-      },
-      error:callback
-    });
+  json:async function(url){
+    try {
+      const result = await $.ajax(url,{
+        dataType:'json',
+      });
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
   }
     
+// (async function getData(url) {
+//   const dataset = await $.ajax(url);
+//   // document.querySelector('.joke').innerHTML = dataset.value.joke;
+// })    
+
   
 };
 Object.assign(Api.prototype,Base.prototype);

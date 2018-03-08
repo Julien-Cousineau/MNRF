@@ -7,3 +7,5 @@ wget https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbo
 wget https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css
 wget https://cdn.plot.ly/plotly-latest.min.js
 wget https://cdnjs.cloudflare.com/ajax/libs/async/2.6.0/async.min.js
+
+https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js

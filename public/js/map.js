@@ -19,7 +19,7 @@ function Map(options){
       
       sources:[//All data sources
         {id:"stations",options:{type:"geojson",data:'data/stations.geojson'}},
-        {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPS.ETA_RN&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
+        {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24F_PR&STYLE=PRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
         // {id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/RiverIceBreakupClassification_ON_AlbanyRiver_20170509_114458/{z}/{x}/{y}.png']}},
         // {id:"ice",options:{type:"geojson",data:'data/ice.geojson'}},
         // {id:"radarsat",options:{type:"image", url:'data/river.png',coordinates:[[-83.5458730875107,53.1986526149143],[-80.9045446620555,53.1986526149143],[-80.9045446620555,51.5953806566912],[-83.5458730875107,51.5953806566912]]}},
@@ -83,37 +83,33 @@ Map.prototype = {
   setStyle:function(id){
     this.map.setStyle('mapbox://styles/mapbox/' + id + '-v9');
   },
-  createRadarList:function(){
+  createRadarList:async function(){
     if(!this.radarlist){
       const self=this;
       const rivername = 'AlbanyRiver';
-      this.getRadarList(function(_list){
+      const _list = await this.getRadarList()
         const list = _list.filter(item=>item.river==rivername);
         const html = `<div class="row"><div class="col-sm-12">{0}</div></div>`.format(self.dropdownMenu('dradar',list,"Select",'radar'));
         $('#collapseRadar').prepend(html);  
         self.dropdownMenuFunc('dradar');
         self.changeIceLayer(list[0].name);
         self.radarlist=true;
-      });
     }
     
   },
-  getRadarList:function(callback){
-    this.parent.api.getRadarList(function(err,list){
-      if(err)console.log(list);
-      
-      const newlist = list.map(name=>{
-        const array = name.split("_");
-        const river = array[2],
-              datestr =array[3],
-              timestr = array[4];
-        const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
-              hour=timestr.substr(0,2),
-              date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
-        return {name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
-      }).sort(function(a,b){return b.date - a.date;});
-      callback(newlist);
-    });
+  getRadarList:async function(){
+    const list = await this.parent.api.getRadarList()
+    const newlist = list.map(name=>{
+      const array = name.split("_");
+      const river = array[2],
+            datestr =array[3],
+            timestr = array[4];
+      const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
+            hour=timestr.substr(0,2),
+            date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
+      return {name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+    }).sort(function(a,b){return b.date - a.date;});
+    return newlist;
   },
   changePrecipOpacity:function(value){
     const opacity = value*0.01;
@@ -157,28 +153,42 @@ Map.prototype = {
     
     
    },
-  loadMap:function(){
+  loadMap:async function(){
     const self=this;
     // this.sources.forEach(function(source){this.map.addSource(source.id, source.options);},this);
-    async.each(self.sources, function(source, callback) {
+    this.sources=await Promise.all(this.sources.map(async (source)=>{
       if(source.options.type=="geojson" && typeof source.options.data=="string"){
-        self.parent.api.json(source.options.data,function(err,data){
-          if(err) console.log('Async failed in loadMap');
-          source.options.data = data;
-          self.map.addSource(source.id, source.options)
-          callback();
-        })
-      } else {self.map.addSource(source.id, source.options);callback();}
-    
-    }, function(err) {
-      // if any of the file processing produced an error, err would equal that error
-      if( err ) console.log('Async failed in loadMap');
-      for(let i in self.layers){
-        const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
-        self.map.addLayer(self.layers[i], layer);
+        const data = await self.parent.api.json(source.options.data);
+        source.options.data = data;
       }
-      self.createRadarList(); 
-    });
+      self.map.addSource(source.id, source.options);
+      return source;
+    }));
+    for(let i in self.layers){
+      const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
+      self.map.addLayer(self.layers[i], layer);
+    }
+    self.createRadarList(); 
+    
+    // async.each(self.sources, function(source, callback) {
+    //   if(source.options.type=="geojson" && typeof source.options.data=="string"){
+    //     self.parent.api.json(source.options.data,function(err,data){
+    //       if(err) console.log('Async failed in loadMap');
+    //       source.options.data = data;
+    //       self.map.addSource(source.id, source.options)
+    //       callback();
+    //     })
+    //   } else {self.map.addSource(source.id, source.options);callback();}
+    
+    // }, function(err) {
+    //   // if any of the file processing produced an error, err would equal that error
+    //   if( err ) console.log('Async failed in loadMap');
+    //   for(let i in self.layers){
+    //     const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
+    //     self.map.addLayer(self.layers[i], layer);
+    //   }
+    //   self.createRadarList(); 
+    // });
   },
   
   changeStationColor:function(station_id,condition){
@@ -228,15 +238,15 @@ Map.prototype = {
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title">RadarSat</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" >{2}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title">Weather Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><p>Three</p></div>
+              <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseGauge"><a class="card-title">Gauge Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseGauge" class="card-body collapse" data-parent="#accordion0" ><p>Three</p></div>
+              <div id="collapseGauge" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    `.format(this.basemaphtml(),this.opacitylegendhtml('precip','RDPS.ETA_RN'),this.opacitylegendhtml('ice','icelegend'));
+    `.format(this.basemaphtml(),this.opacitylegendhtml('precip','RDPA.24F_PR'),this.opacitylegendhtml('ice','icelegend'));
   },
   opacitylegendhtml:function(name,img){
     return `
