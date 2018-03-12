@@ -19,14 +19,16 @@ Card.prototype = {
     return `
     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-{0}">
       <div class="card">
-        <h5 class="card-header">{1}</h5>
-        <div class="card-body" _type="{3}">
-          <!--<h5 class="card-title">Special title treatment</h5>-->
-          {2}
+        <h5 class="card-header" keyword="{1}" keywordtype="text">{2}</h5>
+        <div class="card-body" _type="{4}">
+          <div class="datelabel">
+            <h6></h6>
+          </div>
+          {3}
         </div>
       </div>
     </div>
-    `.format(this.cols,this.title,content,this.type)
+    `.format(this.cols,this.title,this.parent.keywords[this.title][this.parent.language],content,this.type)
   },
   htmlwebcam:function(){return `<img src="https://c1.staticflickr.com/5/4616/40027637332_d5027f8efe_b.jpg" class="card-image">`},
   htmlts:function(){return `<div id="ts_{0}"></div>`.format(this.stationid);},
@@ -37,6 +39,7 @@ Card.prototype = {
   updatewebcam:function(photo){
     const src = `https://c1.staticflickr.com/{0}/{1}/{2}_{3}_b.jpg`.format(photo.farm,photo.server,photo.id,photo.secret);
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] img'.format(this.riverid, this.stationid,'webcam')).attr("src", src);
+    $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] h6'.format(this.riverid, this.stationid,'webcam')).text("Photo Taken " + photo.datelabel);
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"]'.format(this.riverid, this.stationid,'webcam')).removeClass("chart-loading-overlay");
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] .loading-widget-dc'.format(this.riverid, this.stationid,'webcam')).remove();
   },

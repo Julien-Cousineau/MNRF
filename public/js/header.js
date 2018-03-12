@@ -14,6 +14,7 @@ function Header(options){
   const about=this.about=new About({parent:options.parent});
   const self=this;
   $('#togglelanguague').on('click',()=>self.parent.changeLanguageToggle());
+  
 }    
 Header.prototype = {
     html:function(){
@@ -34,7 +35,7 @@ Header.prototype = {
                   <a id="togglelanguague" class="nav-link" href="#" keyword="language" keywordtype="text">{4}</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" data-toggle="modal" data-target="#AboutModal" keyword="about" keywordtype="text">About</a>
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#AboutModal" keyword="about" keywordtype="text">Disclaimer</a>
                 </li>
               </ul>
             </div>

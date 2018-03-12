@@ -115,3 +115,11 @@ overflow-y: auto;
   background-color: #d4d4d4;
   border-color: #d4d4d4;
 }
+.dashboard .datelabel {
+  position:  absolute;
+  background: white;
+  opacity:  0.75;
+}
+.dashboard .datelabel h6 {
+  margin: 0.25rem;
+}

@@ -28,9 +28,37 @@ Chart.prototype = {
     if(att=='Precip')return this.getPrecip();
   },
   getTitle:function(att){
-    if(att=='LVL')return 'Water Level (m)';
-    if(att=='Q')return 'Discharge (???)';
-    if(att=='Precip')return 'Precip (???)';
+    let ts=null;
+    ts = (att=='LVL')?this.data.find(ts=>ts.ts_name=='LVL.15.P' || ts.ts_name=='LVL.15.O'|| ts.ts_name=='LVL.1.O'):ts;
+    ts = (att=='Q')? this.data.find(ts=>ts.ts_name=='Q.P' || ts.ts_name=='Q.1.O' || ts.ts_name=='Q.15'):ts;
+    ts = (att=='Precip')?this.data.find(ts=>ts.ts_name=='Precip.1.P' || ts.ts_name=='Precip.PGL.O' || ts.ts_name=='Precip.24hr.P'|| ts.ts_name=='Precip.24hr.O'):ts;
+    if(ts==null)return console.log('Error in getTitle - Units');
+    
+    let units = this.getLabel(ts.data[0].ts_unitname);
+    let label=null;
+    label= (att=='LVL')?'Water Level/Niveau d\'eau ({0})'.format(units):label;
+    label= (att=='Q')?'Discharge/Débit ({0})'.format(units):label;
+    label= (att=='Precip')?'Precipitation/Précipitation ({0})'.format(units):label;
+    
+    return label;
+    // if(att=='LVL')return this.getLVL();
+    // if(att=='Q')return this.getQ();
+    // if(att=='Precip')return this.getPrecip();
+    // console.log()
+    // if(this.data[0].data[0].ts_unitname)
+    // if(att=='LVL')return 'Water Level (m)';
+    // if(att=='Q')return 'Discharge (???)';
+    // if(att=='Precip')return 'Precip (???)';
+  },
+  getLabel:function(text){
+    switch(text) {
+      case 'meter':
+          return 'm';
+      case 'cubic meter per second':
+          return 'm<sup>3</sup>/s';
+      default:
+          return text;
+    }
   },
   getPrecip:function(){
     // console.log(this.data)
@@ -165,8 +193,8 @@ Chart.prototype = {
   	    },
 	      rangeselector: {
 	        buttons: [
-            {step: 'all'},
-            {count: 6,label: '6m',step: 'month',stepmode: 'backward'},
+            {step: 'all',label: '6m'},
+            // {count: 6,label: '6m',step: 'month',stepmode: 'backward'},
             {count: 1,label: '1m',step: 'month',stepmode: 'backward'}, 
             {count: 7,label: '1w',step: 'day',stepmode: 'backward'}, 
           ]}, 

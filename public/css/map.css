@@ -104,3 +104,8 @@
 .layers ul.dropdown-menu>li.active{
     background: #f5f5f6 !important;
 }
+
+.mapboxgl-ctrl-top-right {
+    top: 70px;
+    right: 0;
+}

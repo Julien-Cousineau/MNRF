@@ -146,7 +146,7 @@ Map.prototype = {
     //   dragRotate:false,
     //   touchZoomRotate:false,
     });
-    if(this.navigationcontrol)map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    if(this.navigationcontrol)map.addControl(new mapboxgl.NavigationControl(), 'top-right');
     if(this.geocoder){const geocoder = new MapboxGeocoder({accessToken: mapboxgl.accessToken});$('.geocoder').append(geocoder.onAdd(map))}
     // map.on('load', function() {self.loadMap()});
     map.on('style.load', function() {self.loadMap()});
@@ -203,7 +203,7 @@ Map.prototype = {
   },
   dropdownMenu:function(name,_list,title,tooltip){
     _list[0].active=true;
-    let list=_list.map(item=>`<li class="{2}"><a href="#" _id="{0}" keyword="{1}" keywordType="text">{0}</a></li>`.format(item.name,item.keyword,item.active?'active':'')).join("");
+    let list=_list.map(item=>`<li class="{2}"><a href="#" _id="{0}">{0}</a></li>`.format(item.name,item.keyword,item.active?'active':'')).join("");
     let ul = `<ul class="dropdown-menu dropdown-menu-side" id="ul_{0}">{1}</ul>`.format(name,list);
     let html =`<div class="btn-group dropright float-right">
                 <button type="button" class="btn btn-secondary dropdown-toggle radarbtn" data-toggle="dropdown" data-offset="0px,22px" aria-haspopup="true" aria-expanded="false">
@@ -231,28 +231,36 @@ Map.prototype = {
         <div class="containe">
         <div id="accordion" class="accordion">
           <div class="card mb-0">
-            <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne"><a class="card-title">Basemap</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+            <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne"><a class="card-title" keyword="basemap" keywordtype="text">{3}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseOne" class="card-body collapse" data-parent="#accordion" >{0}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><a class="card-title">Precipitation</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><a class="card-title" keyword="precipitation" keywordtype="text">{4}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseTwo" class="card-body collapse" data-parent="#accordion0" >{1}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title">RadarSat</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title" keyword="radarsat" keywordtype="text">{5}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" >{2}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title">Weather Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title" keyword="weaterstations" keywordtype="text">{6}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseGauge"><a class="card-title">Gauge Stations</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseGauge"><a class="card-title" keyword="gaugestations" keywordtype="text">{7}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseGauge" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    `.format(this.basemaphtml(),this.opacitylegendhtml('precip','RDPA.24F_PR'),this.opacitylegendhtml('ice','icelegend'));
+    `.format(this.basemaphtml(),
+             this.opacitylegendhtml('precip','RDPA.24F_PR'),
+             this.opacitylegendhtml('ice','icelegend'),
+             this.parent.keywords['basemap'][this.parent.language],
+             this.parent.keywords['precipitation'][this.parent.language],
+             this.parent.keywords['radarsat'][this.parent.language],
+             this.parent.keywords['weaterstations'][this.parent.language],
+             this.parent.keywords['gaugestations'][this.parent.language],
+             );
   },
   opacitylegendhtml:function(name,img){
     return `
     <div class="row">
       <div class="col-sm-5">
-        <p>Opacity</p>
+        <p keyword="opacity" keywordtype="text">{2}</p>
       </div>
       <div class="col-sm-7">
         <input type="range" min="1" max="100" value="25" class="slider" id="{0}_slider">
@@ -261,7 +269,7 @@ Map.prototype = {
         <img src="img/{1}.png" id="{0}_img">
       </div>
     </div>
-    `.format(name,img)
+    `.format(name,img, this.parent.keywords['opacity'][this.parent.language])
   }
    
 };
