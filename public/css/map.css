@@ -26,7 +26,6 @@
     float: right;
 }
 
-
 .layers {
   position: absolute;
   top: 168px;
@@ -37,6 +36,18 @@
   /*overflow: hidden;*/
   -webkit-transition: all 0.4s ease-in-out;
   transition: all 0.4s ease-in-out;
+}
+
+.timeslidercontainer {
+  position: absolute;
+  top: 135px;
+  /*// height: 140px;*/
+  left: 292px;
+  width: 264px;
+  /*border-radius:3px;*/
+  /*overflow: hidden;*/
+  /*-webkit-transition: all 0.4s ease-in-out;*/
+  /*transition: all 0.4s ease-in-out;*/
 }
 .layers.checked {
   top: 92px;   
@@ -68,6 +79,11 @@
     margin-top: 0;
     margin-bottom: 0;
 }
+
+.layers .stations {
+    margin-bottom: 10px;
+}
+
 
 .layers img {
   float: right;

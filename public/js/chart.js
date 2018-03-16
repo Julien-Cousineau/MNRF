@@ -2,7 +2,9 @@
 function Chart(options){
   this.properties ={
     charted:false,
-    
+    isprecip:false,
+    isprecipon:false,
+    isUnderRelayout:false,
   };
   this.properties=extend(this.properties,options);
   Base.call(this,this.properties);
@@ -10,6 +12,13 @@ function Chart(options){
   
 }
 Chart.prototype = {
+  get activeatt(){
+    if(!(this._activeatt))this._activeatt='LVL';
+    return this._activeatt
+  },
+  set activeatt(value){
+    this._activeatt=value;
+  },  
   get minmaxX(){
     const ts = this.data.find(ts=>ts.ts_name=='LVL.15.P' || ts.ts_name=='LVL.15.O'|| ts.ts_name=='LVL.1.O');
     if(!(ts))return console.log('Chart does not contain LVL');
@@ -31,7 +40,7 @@ Chart.prototype = {
     let ts=null;
     ts = (att=='LVL')?this.data.find(ts=>ts.ts_name=='LVL.15.P' || ts.ts_name=='LVL.15.O'|| ts.ts_name=='LVL.1.O'):ts;
     ts = (att=='Q')? this.data.find(ts=>ts.ts_name=='Q.P' || ts.ts_name=='Q.1.O' || ts.ts_name=='Q.15'):ts;
-    ts = (att=='Precip')?this.data.find(ts=>ts.ts_name=='Precip.1.P' || ts.ts_name=='Precip.PGL.O' || ts.ts_name=='Precip.24hr.P'|| ts.ts_name=='Precip.24hr.O'):ts;
+    ts = (att=='Precip')?this.data.find(ts=>ts.ts_name=='Precip.1.P' || ts.ts_name=='Precip.1.O' || ts.ts_name=='Precip.PGL.O' || ts.ts_name=='Precip.24hr.P'|| ts.ts_name=='Precip.24hr.O'):ts;
     if(ts==null)return console.log('Error in getTitle - Units');
     
     let units = this.getLabel(ts.data[0].ts_unitname);
@@ -56,15 +65,20 @@ Chart.prototype = {
           return 'm';
       case 'cubic meter per second':
           return 'm<sup>3</sup>/s';
+      case 'millimeter':
+          return 'mm';          
       default:
           return text;
     }
   },
+  getPrecipData:function(){
+    const ts = this.data.find(ts=>ts.ts_name=='Precip.1.P' || ts.ts_name=='Precip.1.O' || ts.ts_name=='Precip.PGL.O' || ts.ts_name=='Precip.24hr.P'|| ts.ts_name=='Precip.24hr.O');
+    if(!(ts))return console.log('Chart does not contain {0}'.format(ts.ts_name));
+    return ts;
+  },
   getPrecip:function(){
     // console.log(this.data)
- 
-    const ts = this.data.find(ts=>ts.ts_name=='Precip.1.P' || ts.ts_name=='Precip.PGL.O' || ts.ts_name=='Precip.24hr.P'|| ts.ts_name=='Precip.24hr.O');
-    if(!(ts))return console.log('Chart does not contain {0}'.format(ts.ts_name));
+    const ts = this.getPrecipData();
     const _att= ts.ts_name;
     if(this.data.find(ts=>ts.ts_name==_att).data[0].data.length==0)console.log('{0} does not contain values'.format(ts.ts_name));
     return {
@@ -74,6 +88,9 @@ Chart.prototype = {
       type: 'bar',
       name:_att,
       showlegend: false,
+      marker:{
+            color	:	'#ff9800',
+      }
     };
   },
   getQ:function(){
@@ -85,6 +102,14 @@ Chart.prototype = {
         y: this.data.find(ts=>ts.ts_name==_att).data[0].data.map(row=>row[1]),
         yaxis: 'y1',
         type: 'scatter',
+        line: {
+                color	:	'rgb(31, 119, 180)',
+                width	:	1.5,
+                dash	:	'solid',
+                shape	:	'linear',
+                simplify	:		true,
+                connectgaps	:		true,
+              },        
         name:_att
       };
 
@@ -108,6 +133,21 @@ Chart.prototype = {
       },
       name:_att
     };
+  },
+  getPrecipAxis:function(){
+    const ts=this.getPrecipData();
+    const _att= ts.ts_name;
+    const y = this.data.find(ts=>ts.ts_name==_att).data[0].data.map(row=>row[1]);
+    const max = Math.max.apply(null, y);
+    return   {
+        // domain: [0.75, 1],
+        range:[max,0],
+        side: 'right',
+        showline:true,
+        mirror:true,
+        title:'Precip (???)',
+        overlaying: 'y',
+      };
   },
   getTsLayout:function(options,properties){
     const height = $('#ts_{0}'.format(this.stationid)).parent().height();
@@ -200,14 +240,38 @@ Chart.prototype = {
           ]}, 
       }
     };
+   
+    
+    
     if(options.rangeslider)layout=extendExtra(layout,rangeslider);
+    if(this.isprecip)layout.yaxis2=this.getPrecipAxis();
     
     
     
     return extendExtra(layout,properties);
 
   },
+  changeYaxis:function(relayoutData){ //Temporary Solution
+    if(this.isUnderRelayout){this.isUnderRelayout=false;return;}
+    if(relayoutData['xaxis.autorange']===true){this.isUnderRelayout=true;Plotly.relayout(this.gd, {'yaxis.autorange': true});return;}
+    
+    const startstr = relayoutData['xaxis.range[0]'];
+    const endstr = relayoutData['xaxis.range[1]'];
+    const start = new Date(startstr);
+    const end = new Date(endstr);
+    const data = this.getData(this.activeatt);
+    const y=[];
+    data.x.forEach((item,i)=>{if(item>=start && item<=end){y.push(data.y[i]);}});
+    // const y=data.y[index];
+    const max = Math.max.apply(null, y);
+    const min = Math.min.apply(null, y);
+    var update = {'yaxis.range': [min,max]};
+    this.isUnderRelayout=true;
+    Plotly.relayout(this.gd, update);
+    return;
+  },
   createPlot:function(data, layout){
+    const self=this;
     if(!(this.gd)){
       const d3 = this.d3 = Plotly.d3;
       const gd3 = d3.select('#ts_{0}'.format(this.stationid))
@@ -217,11 +281,13 @@ Chart.prototype = {
     if(this.charted){
       Plotly.newPlot(this.gd, data,layout);}
     else{
+      
       Plotly.newPlot(this.gd, data,layout);
       this.createbtns();
-      window.onresize = function() {Plotly.Plots.resize(this.gd);}; 
+      window.onresize = function() {Plotly.Plots.resize(this.gd);};
       this.charted=true;
     }
+    this.gd.on('plotly_relayout',function(relayoutData){self.changeYaxis(relayoutData)}); // Temporary Solution
     
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"]'.format(this.riverid, this.stationid,'ts')).removeClass("chart-loading-overlay");
     $('[_riverid="{0}"] [_stationid="{1}"] [_type="{2}"] .loading-widget-dc'.format(this.riverid, this.stationid,'ts')).remove();
@@ -234,10 +300,16 @@ Chart.prototype = {
     const html=`<div class="btn-container">
                   <button class="btn btn-chart active" _btn="LVL_{0}">LVL</button>
                   <button class="btn btn-chart" _btn="Q_{0}">Q</button>
+                  <span class="preciplabel" keyword="precipitation" keywordtype="text">Precip. :</span>
+                  <div class="material-switch pull-right">
+                    <input id="switch_precip_{0}" type="checkbox">
+                    <label for="switch_precip_{0}" class="switch-color"></label>
+                  </div>
                 </div>`.format(this.stationid);
      $('#ts_{0}'.format(this.stationid)).parent().prepend(html);
      $('[_btn="LVL_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('LVL')})
      $('[_btn="Q_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('Q')})
+     $('#switch_precip_{0}'.format(this.stationid)).on("click",()=>{self.changeData()})
   },
   changeData:function(att){
     // $('.card-body').addClass("chart-loading-overlay");
@@ -250,6 +322,7 @@ Chart.prototype = {
       $('[_btn="Q_{0}"]'.format(this.stationid)).addClass('active');
       $('[_btn="LVL_{0}"]'.format(this.stationid)).removeClass('active');
     } 
+    this.isprecipon = $('#switch_precip_{0}'.format(this.stationid)).prop("checked");
     this.ts_2(att);
     
   },
@@ -296,9 +369,16 @@ Chart.prototype = {
  
 
   ts_2:function(_att){
-    const att = _att || 'LVL'
-    const data = this.getThresholds(att).concat([this.getData(att)]);
-    const layout = this.getTsLayout({rangeslider:true},{yaxis:{title:this.getTitle(att)}});
+    if(_att)this.activeatt=_att;
+    const att = this.activeatt;
+    let data = this.getThresholds(att);
+    data = (this.isprecip && this.isprecipon) ? data.concat([this.getData('Precip')]):data;
+    data = data.concat([this.getData(att)]);
+                                  
+    const layout = (this.isprecip && this.isprecipon)? this.getTsLayout({rangeslider:true},{yaxis2:{title:this.getTitle('Precip')},yaxis:{title:this.getTitle(att)}}):
+                                    this.getTsLayout({rangeslider:true},{yaxis:{title:this.getTitle(att)}})
+  
+   
     this.createPlot(data,layout);
     
     

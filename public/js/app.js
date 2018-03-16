@@ -20,7 +20,8 @@ function App(){
       basemap:{'en':"Basemap",fr:"Carte de base"},
       precipitation:{'en':"Precipitation",fr:"Précipitation"},
       icechart:{'en':"Ice Chart",fr:"Carte de glace"},
-      weaterstations:{'en':"Weather Stations",fr:"Stations météorologiques"},
+      stations:{'en':"Stations",fr:"Stations"},
+      weatherstations:{'en':"Weather Stations",fr:"Stations météorologiques"},
       gaugestations:{'en':"Gauge Stations",fr:"Stations marégraphiques"},
       opacity:{'en':"Opacity",fr:"Opacité"},
       recherche:{'en':"Search",fr:"Recherche"},
@@ -53,70 +54,73 @@ function App(){
       `},
     },
     cards:[],
+    wstations:[
+        {id:"131136",ts_select:['Precip.1.O'],cards:[]},
+    ],
     rivers:[
-        // {id:'albanyriver',title:'Albany River',active:true,stations:[
-        //   {title:'Albany River near Hat Island (04HA001)',id:"146399",
-        //   cards:[
-        //     {title:'Camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Albany River above Fishing Creek Island (04HA002)',id:"146412",thresholds:[{name:'low',LVL:3.3,Q:1500,color:'#c0ca33'}, {name:'mid',LVL:4.29,Q:3000,color:'#fdd835'}, {name:'high',LVL:5.14,Q:4500,color:'#ff9800'}, {name:'ext',LVL:5.9,Q:6000,color:'#f44336'}],
-        //   cards:[
-        //     {title:'Camera @ Fishing',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Stooping River above the Mouth (04HA003)',id:"481782",
-        //   cards:[
-        //     {title:'Camera @ Stooping',type:'webcam',photoid:'04HA003_STOOPING_RV'},
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Albany above Nottick Island (04GD001)',id:"146386",
-        //   cards:[
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Kenagami River near Mammamattawa (04JG001)',id:"146478",thresholds:[{name:'low',LVL:23.5,Q:0,color:'#c0ca33'}, {name:'mid',LVL:25.0,Q:0,color:'#fdd835'}, {name:'high',LVL:26.5,Q:0,color:'#ff9800'}, {name:'ext',LVL:28.0,Q:0,color:'#f44336'}],
-        //   cards:[
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Pagwachuan River at Hwy 11 (04JD005)',id:"146439",thresholds:[{name:'low',LVL:10.98,Q:101.5,color:'#c0ca33'}, {name:'mid',LVL:12.65,Q:203,color:'#fdd835'}, {name:'high',LVL:14.33,Q:304,color:'#ff9800'}, {name:'ext',LVL:16.0,Q:406,color:'#f44336'}],
-        //   cards:[
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Nagagami River at Hwy 11 (04JC002)',id:"146426",thresholds:[{name:'low',LVL:3.15,Q:40,color:'#c0ca33'}, {name:'mid',LVL:3.45,Q:135,color:'#fdd835'}, {name:'high',LVL:3.7,Q:200,color:'#ff9800'}, {name:'ext',LVL:3.99,Q:250,color:'#f44336'}],
-        //   cards:[
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},
-        //   {title:'Little Current River at Percy Lake (04JF001)',id:"146465",
-        //   cards:[
-        //     {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //     // {title:'Gauge',type:'gauge'}
-        //     ]},            
-        //   ]},
+        {id:'albanyriver',title:'Albany River',active:true,stations:[
+          {title:'Albany River near Hat Island (04HA001)',id:"146399",thresholds:[{name:'low',LVL:3.3,Q:1500,color:'#c0ca33'}, {name:'mid',LVL:4.29,Q:3000,color:'#fdd835'}, {name:'high',LVL:5.14,Q:4500,color:'#ff9800'}, {name:'ext',LVL:5.9,Q:6000,color:'#f44336'}],
+          cards:[
+            {title:'camera',type:'webcam',photoid:'04HA001_ALBANY_RV'},
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Albany River above Fishing Creek Island (04HA002)',id:"146412",
+          cards:[
+            {title:'camera',type:'webcam',photoid:'04HA002_Albany_Rv_@Fishing'},
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Stooping River above the Mouth (04HA003)',id:"481782",
+          cards:[
+            {title:'camera',type:'webcam',photoid:'04HA003_STOOPING_RV'},
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Albany above Nottick Island (04GD001)',id:"146386",
+          cards:[
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Kenagami River near Mammamattawa (04JG001)',id:"146478",thresholds:[{name:'low',LVL:23.5,Q:0,color:'#c0ca33'}, {name:'mid',LVL:25.0,Q:0,color:'#fdd835'}, {name:'high',LVL:26.5,Q:0,color:'#ff9800'}, {name:'ext',LVL:28.0,Q:0,color:'#f44336'}],
+          cards:[
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Pagwachuan River at Hwy 11 (04JD005)',id:"146439",thresholds:[{name:'low',LVL:10.98,Q:101.5,color:'#c0ca33'}, {name:'mid',LVL:12.65,Q:203,color:'#fdd835'}, {name:'high',LVL:14.33,Q:304,color:'#ff9800'}, {name:'ext',LVL:16.0,Q:406,color:'#f44336'}],
+          cards:[
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Nagagami River at Hwy 11 (04JC002)',id:"146426",thresholds:[{name:'low',LVL:3.15,Q:40,color:'#c0ca33'}, {name:'mid',LVL:3.45,Q:135,color:'#fdd835'}, {name:'high',LVL:3.7,Q:200,color:'#ff9800'}, {name:'ext',LVL:3.99,Q:250,color:'#f44336'}],
+          cards:[
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},
+          {title:'Little Current River at Percy Lake (04JF001)',id:"146465",
+          cards:[
+            {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+            // {title:'Gauge',type:'gauge'}
+            ]},            
+          ]},
         {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
             {title:'Attawapiskat (04FC001)',id:"146273",cards:[
               {title:'camera',type:'webcam',photoid:'04FC001_Attawapiskat_Rv'},
-              {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
+              {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
               ]},
             ]},
-        // {id:'mooseriver',title:'Moose River',active:false,stations:[
-        //     {title:'Moose (04LG004)',id:"146658",cards:[
-        //       {title:'Camera',type:'webcam',photoid:'04LG004_Moose_Rv'},
-        //       {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //       ]}
-        //     ]},
-        // {id:'winiskriver',title:'Winisk River',active:false,stations:[
-        //     {title:'Winisk (04DC001)',id:"146172",cards:[
-        //       {title:'Camera',type:'webcam',photoid:'04DC001_Winisk_Rv'},
-        //       {title:'Time-Series',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15']},
-        //       ]},
-        //     ]},
+        {id:'mooseriver',title:'Moose River',active:false,stations:[
+            {title:'Moose (04LG004)',id:"146658",cards:[
+              {title:'camera',type:'webcam',photoid:'04LG004_Moose_Rv'},
+              {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+              ]}
+            ]},
+        {id:'winiskriver',title:'Winisk River',active:false,stations:[
+            {title:'Winisk (04DC001)',id:"146172",cards:[
+              {title:'camera',type:'webcam',photoid:'04DC001_Winisk_Rv'},
+              {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
+              ]},
+            ]},
       ]
   };
   
@@ -173,6 +177,10 @@ App.prototype = {
         station.cards=station.cards.map((card,i)=>new Card(extend(card,{parent:this.pointer,riverid:river.id,stationid:station.id,cols:(i==0)?4:8/(ncards-1)})),this);
       stations.push(new Station(extend(station,{parent:this.pointer})));
     },this);},this);
+    this.wstations.forEach(station=>{
+      stations.push(new Station(extend(station,{parent:this.pointer})));
+    },this);
+    
     return stations;
   },
   updateTimeseries:function(){

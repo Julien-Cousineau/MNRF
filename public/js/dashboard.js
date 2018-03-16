@@ -82,6 +82,9 @@ Dashboard.prototype = {
       </div>
     `.format(station.title,station.id,station.cards.map(_card=>_card.html(),this).join(""),);
   },
+  addRiver:function(){
+    
+  },
   // card:function(river,station,card,i,ncards){
   //   // const cols=(i==0)?4:8/(ncards-1);
   //   // const _card=new Card({riverid:river.id,stationid:station.id,type:card.type,title:card.title,cols:cols});

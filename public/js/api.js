@@ -59,6 +59,10 @@ Api.prototype = {
     const url ='/getradarlist';
     return await this.json(url);
   },
+  getGeoMet:async function(){
+     const url =`https://geo.weather.gc.ca/geomet-beta?service=WMS&version=1.3.0&request=GetCapabilities`;
+     return await this.xml(url);
+  },
   json:async function(url){
     try {
       const result = await $.ajax(url,{
@@ -68,7 +72,17 @@ Api.prototype = {
     } catch (error) {
         console.error(error);
     }
-  }
+  },
+  xml:async function(url){
+    try {
+      const result = await $.ajax(url,{
+        dataType:'xml',
+      });
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+  },  
     
 // (async function getData(url) {
 //   const dataset = await $.ajax(url);

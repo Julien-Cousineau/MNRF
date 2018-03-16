@@ -1,4 +1,4 @@
-/*global $,Base,extend,mapboxgl,MapboxGeocoder*/
+/*global $,Base,extend,mapboxgl,MapboxGeocoder,debounce,xml2json,range*/
 function Map(options){
   this.properties ={
       id:'map',
@@ -11,6 +11,7 @@ function Map(options){
       navigationcontrol:true,
       geocoder:true,
       style:'mapbox://styles/mapbox/light-v9',
+      weatherOpacity:0.25,
       paint:{ // Default paint values for Mapbox
         ice:{
     		  'raster-opacity': 1,
@@ -19,15 +20,19 @@ function Map(options){
       
       sources:[//All data sources
         {id:"stations",options:{type:"geojson",data:'data/stations.geojson'}},
-        {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24F_PR&STYLE=PRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
+        {id:"wstations",options:{type:"geojson",data:'data/weatherstations.geojson'}},
+        // {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24F_PR&STYLE=PRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true']}},
+        // {id:"weather",options:{type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet-beta/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24P_PR&STYLEPRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true&time=2018-02-26T12:00:00Z']}},
         // {id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/RiverIceBreakupClassification_ON_AlbanyRiver_20170509_114458/{z}/{x}/{y}.png']}},
         // {id:"ice",options:{type:"geojson",data:'data/ice.geojson'}},
         // {id:"radarsat",options:{type:"image", url:'data/river.png',coordinates:[[-83.5458730875107,53.1986526149143],[-80.9045446620555,53.1986526149143],[-80.9045446620555,51.5953806566912],[-83.5458730875107,51.5953806566912]]}},
       ],
       layers:{//All layers - paint and filter are default values. This can change depending on the developer and client selection
-        weather:{id: 'weather',type: 'raster',source: 'weather',paint:{'raster-opacity': 0.25}},
+        // weather:{id: 'weather',type: 'raster',source: {type:"raster", tileSize: 256,tiles:[ 'https://geo.weather.gc.ca/geomet-beta/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24P_PR&STYLEPRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true&time=2018-02-26T12:00:00Z']},paint:{'raster-opacity': 0.25}},
         stations:{id:'stations',type: 'circle',source: 'stations',paint:{'circle-radius':5,'circle-color': 'white','circle-stroke-width':3,'circle-stroke-color':{property:'condition',stops:[[-1,'black'],[0,'green'],[1,'#c0ca33'],[2,'#fdd835'],[3,'#ff9800'],[4,'#f44336']]}}},
         stationsl:{id:'stationsl',type: 'symbol',source: 'stations',paint:{'text-color': 'black'},layout:{'text-size':12,'text-field': '{station_name}','text-anchor':'top-left','text-offset':[0,0.5],"text-allow-overlap":true,"text-ignore-placement":false,"text-optional":false,"text-max-width":32,}},
+        // wstations:{id:'wstations',type: 'circle',source: 'wstations',paint:{'circle-radius':5,'circle-color': 'white','circle-stroke-width':3,'circle-stroke-color':{property:'condition',stops:[[-1,'black'],[0,'green'],[1,'#c0ca33'],[2,'#fdd835'],[3,'#ff9800'],[4,'#f44336']]}}},
+        wstationsl:{id:'wstationsl',type: 'symbol',source: 'wstations',paint:{'text-color': 'black'},layout:{"icon-image": "stadium-15",'text-size':12,'text-field': '{station_name}','text-anchor':'top-left','text-offset':[0,0.5],"text-allow-overlap":true,"text-ignore-placement":false,"text-optional":false,"text-max-width":32,}},
         // ice:{id: 'ice',type: 'raster',source: 'ice'},
         // ice:{id: 'ice',type: 'fill',source: 'ice'},
         // radarsat:{id: 'radarsat',type: 'raster',source: 'radarsat'},
@@ -111,11 +116,17 @@ Map.prototype = {
     }).sort(function(a,b){return b.date - a.date;});
     return newlist;
   },
+
   changePrecipOpacity:function(value){
     const opacity = value*0.01;
+    this.weatherOpacity = opacity;
     // this.paint.weather['raster-opacity']=opacity;
     $("#precip_img").css('opacity', opacity);
-    this.map.setPaintProperty('weather','raster-opacity',opacity);
+    
+    const olddate =  this.activedate || this.dates[value];
+    const olddatestr=olddate.toISOString().replace(/\.[0-9]{3}/, '');
+    const oldlayer = 'weather_{0}'.format(olddatestr);
+    this.map.setPaintProperty(oldlayer,'raster-opacity',opacity);
   },
   changeIceLayer:function(id){
     if(!this.sources.find(item=>item.id=='ice')){this.sources.push({id:"ice",options:{type:"raster", tileSize: 256,scheme: "tms",tiles:['gis/' + id +'/{z}/{x}/{y}.png']}},);}
@@ -150,7 +161,9 @@ Map.prototype = {
     if(this.geocoder){const geocoder = new MapboxGeocoder({accessToken: mapboxgl.accessToken});$('.geocoder').append(geocoder.onAdd(map))}
     // map.on('load', function() {self.loadMap()});
     map.on('style.load', function() {self.loadMap()});
-    
+    map.on('mousemove',debounce(function(e){self.mouseMove(e)}, 10));
+    map.on('touchmove',debounce(function(e){self.mouseMove(e)}, 10));
+    map.on("click",debounce(function(e){self.onClick(e)}, 100));
     
    },
   loadMap:async function(){
@@ -168,29 +181,80 @@ Map.prototype = {
       const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
       self.map.addLayer(self.layers[i], layer);
     }
-    self.createRadarList(); 
-    
-    // async.each(self.sources, function(source, callback) {
-    //   if(source.options.type=="geojson" && typeof source.options.data=="string"){
-    //     self.parent.api.json(source.options.data,function(err,data){
-    //       if(err) console.log('Async failed in loadMap');
-    //       source.options.data = data;
-    //       self.map.addSource(source.id, source.options)
-    //       callback();
-    //     })
-    //   } else {self.map.addSource(source.id, source.options);callback();}
-    
-    // }, function(err) {
-    //   // if any of the file processing produced an error, err would equal that error
-    //   if( err ) console.log('Async failed in loadMap');
-    //   for(let i in self.layers){
-    //     const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
-    //     self.map.addLayer(self.layers[i], layer);
-    //   }
-    //   self.createRadarList(); 
-    // });
+    self.createRadarList();
+    self.getGeoMet();
   },
-  
+  mouseMove:function(e){
+  // if(this.map.getLayer('wstationsl'))this.hoverWeatherStations(e);
+  },
+  onClick:function(e){
+    // if(this.map.getLayer('wstationsl'))this.clickWeatherStations(e);
+  },
+  clickWeatherStations:function(e){
+    const features = this.map.queryRenderedFeatures(e.point, { layers: ['wstationsl']});
+    if (!features.length)return;
+    
+    console.log(features[0]);
+  },
+  getGeoMet:async function(){
+    const xml= await this.parent.api.getGeoMet();
+    const json=xml2json(xml);
+    // TODO: Hardcode RDPA - > 24P_PR
+    const str = json.WMS_Capabilities.Capability.Layer.Layer[8].Layer[3].Dimension['#text'];
+    this.createTimeSlider(str);
+    
+   
+    
+  },
+  createTimeSlider:function(str){
+    const self=this;
+    const [_start,_end,_interval] = str.split("/");
+    const start=new Date(_start),end=new Date(_end)
+    const ndays = (end-start)/1000/60/60/24;
+    this.dates=range(ndays).map(function(i){return new Date(start.addHours(24));});
+    const html =`<input type="range" min="0" max="{0}" value="{0}" class="slider" id="time_slider">
+                 <h6 id="timelabel">{1}</h6>
+    `.format(ndays-1,end.toISOString());
+    $('.timeslidercontainer').append(html);
+    $('#time_slider').on('change', function () {self.changeTime($(this).val());});
+    // this.dates.forEach(date=>this.createWeatherLayers(date),this);
+    this.changeTime(ndays-1);
+    
+  },
+  // createWeatherLayers:function(date){
+  //   const datetime = date.toISOString().replace(/\.[0-9]{3}/, '');
+  //   const layername = 'weather_{0}'.format(datetime)
+  //   if(this.map.getLayer(layername))this.map.removeLayer(layername);
+  //   if(this.map.getSource(layername))this.map.removeSource(layername);
+  //   const url = 'https://geo.weather.gc.ca/geomet-beta/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24P_PR&STYLEPRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true&time={0}'.format(datetime);
+  //   // const layer={id: layername,type: 'raster',source: {type:"raster", tileSize: 256,tiles:[url]},paint:{'raster-opacity': this.weatherOpacity},layout:{'visibility': 'none'}};
+  //   const layer={id: layername,type: 'raster',source: {type:"raster", tileSize: 256,tiles:[url]},paint:{'raster-opacity': 0}};
+  //   this.map.addLayer(layer);
+  // },
+  changeTime:function(value){
+    const olddate =  this.activedate || this.dates[value];
+    const newdate = this.activedate = this.dates[value]
+    const olddatestr=olddate.toISOString().replace(/\.[0-9]{3}/, '');
+    const newdatestr=newdate.toISOString().replace(/\.[0-9]{3}/, '');
+    $('#timelabel').text(newdatestr);
+    const oldlayer = 'weather_{0}'.format(olddatestr)    
+    const newlayer = 'weather_{0}'.format(newdatestr)
+    // this.map.setLayoutProperty(oldlayer, 'visibility', 'none');
+    // this.map.setLayoutProperty(newlayer, 'visibility', 'visible');
+    if(this.map.getLayer(oldlayer))this.map.setPaintProperty(oldlayer,'raster-opacity',0);
+    if(this.map.getLayer(newlayer)){this.map.setPaintProperty(newlayer,'raster-opacity',this.weatherOpacity)}
+    else{
+      const url = 'https://geo.weather.gc.ca/geomet-beta/?LANG=E&SERVICE=WMS&VERSION=1.1.1&request=GetMap&LAYERS=RDPA.24P_PR&STYLEPRECIPMM&format=image/png&bbox={bbox-epsg-3857}&srs=EPSG:3857&width=256&height=256&TRANSPARENT=true&time={0}'.format(newdatestr);
+      // const layer={id: layername,type: 'raster',source: {type:"raster", tileSize: 256,tiles:[url]},paint:{'raster-opacity': this.weatherOpacity},layout:{'visibility': 'none'}};
+      const layer={id: newlayer,type: 'raster',source: {type:"raster", tileSize: 256,tiles:[url]},paint:{'raster-opacity': this.weatherOpacity}};
+      this.map.addLayer(layer,'stations');
+    }
+    
+  },
+  hoverWeatherStations:function(e){
+    const features = this.map.queryRenderedFeatures(e.point, { layers: ['wstationsl']});
+    this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+  },
   changeStationColor:function(station_id,condition){
     const features=this.sources.find(item=>item.id='stations').options.data.features;
     const station = features.find(feature=>feature.properties.stationid==station_id);
@@ -237,22 +301,22 @@ Map.prototype = {
               <div id="collapseTwo" class="card-body collapse" data-parent="#accordion0" >{1}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title" keyword="radarsat" keywordtype="text">{5}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" >{2}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title" keyword="weaterstations" keywordtype="text">{6}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseGauge"><a class="card-title" keyword="gaugestations" keywordtype="text">{7}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseGauge" class="card-body collapse" data-parent="#accordion0" ><p>Blank</p></div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title" keyword="stations" keywordtype="text">{6}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div id="collapseThree" class="card-body collapse" data-parent="#accordion0" ><img height="30" src="img/stadium-15.svg" alt="{7}"><p class="stations"  keyword="weatherstations" keywordtype="text">{7}</p><img src="img/circle.svg" alt="{8}"><p class="stations"  keyword="gaugestations" keywordtype="text">{8}</p></div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="timeslidercontainer"></div>
     `.format(this.basemaphtml(),
              this.opacitylegendhtml('precip','RDPA.24F_PR'),
              this.opacitylegendhtml('ice','icelegend'),
              this.parent.keywords['basemap'][this.parent.language],
              this.parent.keywords['precipitation'][this.parent.language],
              this.parent.keywords['radarsat'][this.parent.language],
-             this.parent.keywords['weaterstations'][this.parent.language],
+             this.parent.keywords['stations'][this.parent.language],
+             this.parent.keywords['weatherstations'][this.parent.language],
              this.parent.keywords['gaugestations'][this.parent.language],
              );
   },

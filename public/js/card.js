@@ -49,7 +49,16 @@ Card.prototype = {
     const data= await Promise.all(this.ts_select.map(async (ts_select) => {
       return await station.getTSValues(ts_select);
     }));
-    if(!(this.charted)){this.chart=new Chart(extend(this.properties,{data:data}))}
+    
+    if(this.precipid){
+      const precipid=this.precipid;
+      const wstation = this.parent.stations.find(station=>station.id==precipid);
+      const wdata = await wstation.getTSValues(wstation.ts_select[0]);
+      data.push(wdata);
+    }
+    const isprecip = (this.precipid)?true:false;
+    
+    if(!(this.charted)){this.chart=new Chart(extend(this.properties,{data:data,isprecip:isprecip}))}
     else{this.chart.update(data)}
   },
 };

@@ -26,6 +26,9 @@ if (!String.prototype.format) {
     });
   };
 }
+function range(n){
+  return Array.from(new Array(n), (x,i) => i);
+}
 
 Date.prototype.addHours = function(h) {    
    this.setTime(this.getTime() + (h*60*60*1000)); 
@@ -46,4 +49,19 @@ Date.prototype.yyyymmdd = function() {
    var dd  = this.getDate(); 
    return "{0}-{1}-{2}".format(yyyy,mm.padZero(2),dd.padZero(2));
 };
+
 	
+const debounce=function(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
