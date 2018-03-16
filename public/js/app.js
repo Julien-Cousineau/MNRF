@@ -1,4 +1,4 @@
-/*global $,Base,Header,Dashboard,Api,Card,extend,Station,Chart*/
+/*global $,Base,Header,Dashboard,Api,Card,extend,Station,Chart,RadarTable*/
 $(document).ready( function () {
   new App();
 });
@@ -32,6 +32,7 @@ function App(){
       about:{'en':"Disclaimer",fr:"Avertissement"},
       abouttitle:{'en':"Disclaimer for the Far North Dashboard from the Ministry of Natural Resources and Forestry",fr:"Avertissement du tableau de bord du Grand Nord du Ministère des Richesses naturelles et des Forêts"},
       accept:{'en':"I Agree",fr:"J'accepte"},
+      close:{'en':"Close",fr:"Ferme"},
       aboutcontent:{'en':`
       <p>Please Read Before Proceeding:<br><br>
          Users should use the information on this website with caution and do so at their own risk. The Government of Ontario accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.<br><br>
@@ -133,7 +134,13 @@ function App(){
   this.api=new Api({parent:pointer});
   this.header=new Header({parent:pointer});
   this.dashboard=new Dashboard({parent:pointer,rivers:this.rivers});
+  
+  // this.createRadarTable();
+  
+  
+
   this.map=new Map({parent:pointer});
+  
   
   this.update();
 
@@ -141,6 +148,32 @@ function App(){
   
 }
 App.prototype = {
+  createRadarTable:async function(func){
+    const self=this;
+    const pointer = this.pointer = function(){return self;};
+    const list = await this.api.getRadarList();
+    const newlist = list.map(name=>{
+      const array = name.split("_");
+      const river = array[2],
+            datestr =array[3],
+            timestr = array[4];
+      const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
+            hour=timestr.substr(0,2),
+            date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
+      return {name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+    }).sort(function(a,b){return b.date - a.date;});
+    
+    this.radarTable = new RadarTable({
+          parent:pointer,
+          change:(obj)=>{func(obj.name);},
+          data:newlist,
+      })
+    func(newlist[0].name);
+    const html = `<div class="row"><div class="col-sm-12"><p id="radarlabel">{0}</p><button id="changeradarbtn" class="btn btn-secondary">Change</button></div></div>`.format(newlist[0].name);
+    $('#collapseRadar').prepend(html);
+    $('#changeradarbtn').on('click',function(e){$('#RadarModal').modal('show');})
+    
+  },
   changeLanguageToggle:function() {
     if(this.debug)console.log('Change Language Toggle');
     this.language= (this.language==='en') ? 'fr':'en';

@@ -8,4 +8,10 @@ wget https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbo
 wget https://cdn.plot.ly/plotly-latest.min.js
 wget https://cdnjs.cloudflare.com/ajax/libs/async/2.6.0/async.min.js
 
-https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js
+wget https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js
+
+wget https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css
+wget https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css
+
+wget https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js
+wget https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js

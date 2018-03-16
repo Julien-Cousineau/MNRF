@@ -52,6 +52,8 @@ function Map(options){
   $(this.container).append(this.html());
   $(this.container).append(this.layerGUIhtml());
   
+  
+  
   this.geocoderHeader();
   
   this.createMap();
@@ -181,7 +183,11 @@ Map.prototype = {
       const layer = (typeof self.map.getLayer('aeroway-taxiway')!=='undefined' && i=='weather')?'aeroway-taxiway':'';
       self.map.addLayer(self.layers[i], layer);
     }
-    self.createRadarList();
+    // self.createRadarList();
+    this.parent.createRadarTable((id)=>{return this.changeIceLayer(id);})
+    
+    
+    
     self.getGeoMet();
   },
   mouseMove:function(e){
