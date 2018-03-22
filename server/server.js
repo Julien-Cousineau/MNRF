@@ -6,13 +6,7 @@ const cors = require('cors');
 const compress = require('compression');
 const bodyParser = require('body-parser');
 const util = require('./util');
-// const request = require("request");
 
-// const  reqq = require('req-fast');
-
-// const tilestrata = require('tilestrata');
-// const strata = tilestrata();
-// const disk = require('tilestrata-disk');
 const rastertiles = require('./rastertiles')
 
 const fileUpload = require('express-fileupload');
@@ -111,16 +105,10 @@ Webserver.prototype = {
     
     exec('gdalwarp -overwrite -srcnodata 0 -dstnodata 0 {0} {1}'.format(filepath,processfilepath), (error, stdout, stderr) => {
       if (error) {console.error(`exec error: ${error}`);return;  }
-      // console.log(`stdout: ${stdout}`);
-      // console.log(`stderr: ${stderr}`);
       exec('gdal_translate -of vrt -expand rgba {0} {1}'.format(processfilepath,vrtfilepath), (error, stdout, stderr) => {
         if (error) {console.error(`exec error: ${error}`);return;  }
-        // console.log(`stdout: ${stdout}`);
-        // console.log(`stderr: ${stderr}`);
         exec('gdal2tiles.py --profile=mercator -z 1-14 -a 0 {0} {1}'.format(vrtfilepath,tilespath), (error, stdout, stderr) => {
           if (error) {console.error(`exec error: ${error}`);return;  }
-            // console.log(`stdout: ${stdout}`);
-            // console.log(`stderr: ${stderr}`);
           console.log("TIF2Tiles complete ({0})".format(name));
           fs.unlinkSync(processfilepath);
           fs.unlinkSync(vrtfilepath);
