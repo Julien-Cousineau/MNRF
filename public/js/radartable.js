@@ -6,7 +6,9 @@ function RadarTable(options){
       id:'radartable',
       columns:{ 
         // id:{title:'File Name',className:'col_filename',orderable:true,data:'id',render:()=>{}},
-        name:{title:'Name',className:'col_filename',orderable:true,},
+        // name:{title:'Name',className:'col_filename',orderable:true,},
+        river:{title:'River',className:'col_river',orderable:true,},
+        date:{title:'Date',className:'col_date',orderable:true,render:(full)=>{return `{0}`.format(full.date.yyyymmdd())}},
         select:{title:'',className:'col_select',orderable:false,action:(id,className)=>{self.showlayer(id,className)},render:(full)=>{return `<button class="btn btn-secondary">Show</button>`}}
         
       },

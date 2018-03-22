@@ -93,6 +93,10 @@ Chart.prototype = {
       }
     };
   },
+  getPrecipStationName:function(){
+    const ts = this.getPrecipData();
+    return ts.station_name;
+  },
   getQ:function(){
      const ts = this.data.find(ts=>ts.ts_name=='Q.P' || ts.ts_name=='Q.1.O' || ts.ts_name=='Q.15');
      if(!(ts))return console.log('Chart does not contain Q.P');
@@ -300,12 +304,12 @@ Chart.prototype = {
     const html=`<div class="btn-container">
                   <button class="btn btn-chart active" _btn="LVL_{0}">LVL</button>
                   <button class="btn btn-chart" _btn="Q_{0}">Q</button>
-                  <span class="preciplabel" keyword="precipitation" keywordtype="text">Precip. :</span>
+                  <span class="preciplabel">Precip. {1} :</span>
                   <div class="material-switch pull-right">
                     <input id="switch_precip_{0}" type="checkbox">
                     <label for="switch_precip_{0}" class="switch-color"></label>
                   </div>
-                </div>`.format(this.stationid);
+                </div>`.format(this.stationid,this.getPrecipStationName());
      $('#ts_{0}'.format(this.stationid)).parent().prepend(html);
      $('[_btn="LVL_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('LVL')})
      $('[_btn="Q_{0}"]'.format(this.stationid)).on("click",()=>{self.changeData('Q')})

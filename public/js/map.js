@@ -206,11 +206,11 @@ Map.prototype = {
     const xml= await this.parent.api.getGeoMet();
     const json=xml2json(xml);
     // TODO: Hardcode RDPA - > 24P_PR
-    const str = json.WMS_Capabilities.Capability.Layer.Layer[8].Layer[3].Dimension['#text'];
-    this.createTimeSlider(str);
-    
-   
-    
+    // console.log(json);
+    const rdpa = json.WMS_Capabilities.Capability.Layer.Layer.find(layer=>layer.Title['#text']==="Regional Deterministic Precipitation Analysis (RDPA)");
+    if(!(rdpa))console.log("Error in finding rdpa layer");
+    if(rdpa)this.createTimeSlider(rdpa.Layer[3].Dimension['#text']);
+
   },
   createTimeSlider:function(str){
     const self=this;
@@ -218,10 +218,31 @@ Map.prototype = {
     const start=new Date(_start),end=new Date(_end)
     const ndays = (end-start)/1000/60/60/24;
     this.dates=range(ndays).map(function(i){return new Date(start.addHours(24));});
-    const html =`<input type="range" min="0" max="{0}" value="{0}" class="slider" id="time_slider">
-                 <h6 id="timelabel">{1}</h6>
-    `.format(ndays-1,end.toISOString());
-    $('.timeslidercontainer').append(html);
+
+    // 2018-03-1412:00:00Z --> 2018-03-15T12:00:00Z
+    const html= `
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="timeslidercontainertext">
+          <p id="timelabel_0" keyword="quantityofprecip" keywordtype="text">{1}</p>
+          <p id="timelabel_1"></p>
+          <p id="timelabel_2" keyword="quantityofprecip2" keywordtype="text">{2}</p>
+          <p id="timelabel_3"></p>
+          <p id="timelabel_4"><br></p>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <p>Date</p>
+      </div>
+      <div class="col-sm-7">
+        <div class="timeslidercontainerr">
+          <input type="range" min="0" max="{0}" value="{0}" class="slider" id="time_slider">
+        </div>
+      </div>
+      </div>`.format(ndays-1,this.parent.keywords['quantityofprecip'][this.parent.language],this.parent.keywords['quantityofprecip2'][this.parent.language])
+  
+    $('#collapsePrecip').prepend(html);  
+  
     $('#time_slider').on('change', function () {self.changeTime($(this).val());});
     // this.dates.forEach(date=>this.createWeatherLayers(date),this);
     this.changeTime(ndays-1);
@@ -242,7 +263,9 @@ Map.prototype = {
     const newdate = this.activedate = this.dates[value]
     const olddatestr=olddate.toISOString().replace(/\.[0-9]{3}/, '');
     const newdatestr=newdate.toISOString().replace(/\.[0-9]{3}/, '');
-    $('#timelabel').text(newdatestr);
+    
+    $('#timelabel_1').text(`{0}`.format(newdate.addHours(-24).toISOString().replace(/\.[0-9]{3}/, '')));
+    $('#timelabel_3').text(`{0}`.format(newdate.addHours(24).toISOString().replace(/\.[0-9]{3}/, '')));
     const oldlayer = 'weather_{0}'.format(olddatestr)    
     const newlayer = 'weather_{0}'.format(newdatestr)
     // this.map.setLayoutProperty(oldlayer, 'visibility', 'none');
@@ -303,8 +326,8 @@ Map.prototype = {
           <div class="card mb-0">
             <div class="card-header collapsed" data-toggle="collapse" href="#collapseOne"><a class="card-title" keyword="basemap" keywordtype="text">{3}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseOne" class="card-body collapse" data-parent="#accordion" >{0}</div>
-              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><a class="card-title" keyword="precipitation" keywordtype="text">{4}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
-              <div id="collapseTwo" class="card-body collapse" data-parent="#accordion0" >{1}</div>
+              <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapsePrecip"><a class="card-title" keyword="precipitation" keywordtype="text">{4}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
+              <div id="collapsePrecip" class="card-body collapse" data-parent="#accordion0" >{1}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseRadar"><a class="card-title" keyword="radarsat" keywordtype="text">{5}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
               <div id="collapseRadar" class="card-body collapse" data-parent="#accordion0" >{2}</div>
               <div class="card-header collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><a class="card-title" keyword="stations" keywordtype="text">{6}</a><span class="right"><i class="fas fa-chevron-down"></i></span></div>
@@ -314,10 +337,10 @@ Map.prototype = {
         </div>
       </div>
     </div>
-    <div class="timeslidercontainer"></div>
+    <!--<div class="timeslidercontainer"></div>-->
     `.format(this.basemaphtml(),
-             this.opacitylegendhtml('precip','RDPA.24F_PR'),
-             this.opacitylegendhtml('ice','icelegend'),
+             this.opacitylegendhtml2('precip','RDPA.24F_PR'),
+             this.opacitylegendhtml1('ice','icelegend'),
              this.parent.keywords['basemap'][this.parent.language],
              this.parent.keywords['precipitation'][this.parent.language],
              this.parent.keywords['radarsat'][this.parent.language],
@@ -326,7 +349,7 @@ Map.prototype = {
              this.parent.keywords['gaugestations'][this.parent.language],
              );
   },
-  opacitylegendhtml:function(name,img){
+  opacitylegendhtml1:function(name,img){
     return `
     <div class="row">
       <div class="col-sm-5">
@@ -340,7 +363,25 @@ Map.prototype = {
       </div>
     </div>
     `.format(name,img, this.parent.keywords['opacity'][this.parent.language])
-  }
+  },
+  opacitylegendhtml2:function(name,img){
+    return `
+    <div class="row">
+      <div class="col-sm-5">
+        <p keyword="opacity" keywordtype="text">{2}</p>
+      </div>
+      <div class="col-sm-7">
+        <input type="range" min="1" max="100" value="25" class="slider" id="{0}_slider">
+      </div>
+      <div class="col-sm-8" style="display:inline;">
+        <a href="https://weather.gc.ca/grib/grib2_RDPA_ps10km_e.html">source</a>
+      </div>
+      <div class="col-sm-4">
+        <img src="img/{1}.png" id="{0}_img">
+      </div>
+    </div>
+    `.format(name,img, this.parent.keywords['opacity'][this.parent.language])
+  }  
    
 };
 Object.assign(Map.prototype,Base.prototype);

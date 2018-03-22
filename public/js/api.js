@@ -45,7 +45,7 @@ Api.prototype = {
     return await this.json(url);
   },
   getPhotos:async function(){
-    const date = new Date().addHours(-24*1*1).yyyymmdd(); // 24hours x 1 days x 1 week 
+    const date = new Date().addHours(-48*1*1).yyyymmdd(); // 24hours x 1 days x 1 week 
     const url ='https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=87920266b5ecd6a632f152ec4873533d&user_id=145447898%40N03&min_upload_date={0}&per_page=500&format=json&nojsoncallback=1'.format(date) ;
     // const url='data/getphotos.json'
     return await this.json(url);

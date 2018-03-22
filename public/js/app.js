@@ -28,6 +28,8 @@ function App(){
       search:{'en':"Search",fr:"Recherche"},
       camera:{'en':"Camera",fr:"Caméra"},
       timeseries:{'en':"Time-series",fr:"Séries chronologique"},
+      quantityofprecip:{'en':"Quantity of precipitation from: ",fr:" Quantité de précipitation du: "},
+      quantityofprecip2:{'en':"to",fr:"au"},
       
       about:{'en':"Disclaimer",fr:"Avertissement"},
       abouttitle:{'en':"Disclaimer for the Far North Dashboard from the Ministry of Natural Resources and Forestry",fr:"Avertissement du tableau de bord du Grand Nord du Ministère des Richesses naturelles et des Forêts"},
@@ -56,7 +58,7 @@ function App(){
     },
     cards:[],
     wstations:[
-        {id:"131136",ts_select:['Precip.1.O'],cards:[]},
+        {title:"MOOSONEE RCS",id:"131136",ts_select:['Precip.1.O'],cards:[]},
     ],
     rivers:[
         {id:'albanyriver',title:'Albany River',active:true,stations:[
@@ -153,14 +155,30 @@ App.prototype = {
     const pointer = this.pointer = function(){return self;};
     const list = await this.api.getRadarList();
     const newlist = list.map(name=>{
+      
       const array = name.split("_");
-      const river = array[2],
-            datestr =array[3],
-            timestr = array[4];
-      const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),
-            hour=timestr.substr(0,2),
-            date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));
-      return {name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+      let obj={};
+      if(array.length==3){
+        const river=array[0],datestr=array[1],daystr=array[2];
+        const year=datestr.substr(0,4),month=datestr.substr(4,2),day=daystr.substr(0,2);
+        const date = new Date(parseInt(year),parseInt(month-1),parseInt(day));  
+        obj={name:name,river:river,date:date,id:river+"_"+datestr+day,keyword:"radarsat",active:false};
+      } else if(array.length==4){
+        const river=array[0],yearstr=array[1],monthstr=array[2],daystr=array[3];
+        const year=yearstr.substr(0,4),month=monthstr.substr(0,2),day=daystr.substr(0,2);
+        const date = new Date(parseInt(year),parseInt(month-1),parseInt(day));  
+        obj={name:name,river:river,date:date,id:river+"_"+year+month+day,keyword:"radarsat",active:false};
+        
+      }
+      else {
+        const river = array[2],datestr =array[3],timestr = array[4];
+        const year=datestr.substr(0,4),month=datestr.substr(4,2),day=datestr.substr(6,2),hour=timestr.substr(0,2);
+        const date = new Date(parseInt(year),parseInt(month-1),parseInt(day),parseInt(hour));  
+        obj={name:name,river:river,date:date,id:river+"_"+datestr+"_"+timestr,keyword:"radarsat",active:false};
+      }
+      
+      
+      return obj;
     }).sort(function(a,b){return b.date - a.date;});
     
     this.radarTable = new RadarTable({
@@ -168,8 +186,10 @@ App.prototype = {
           change:(obj)=>{func(obj.name);},
           data:newlist,
       })
-    func(newlist[0].name);
-    const html = `<div class="row"><div class="col-sm-12"><p id="radarlabel">{0}</p><button id="changeradarbtn" class="btn btn-secondary">Change</button></div></div>`.format(newlist[0].name);
+      
+    const first = newlist.find(item=>item.river=="AlbanyRiver");
+    func(first.name);
+    const html = `<div class="row"><div class="col-sm-12"><p id="radarlabel">{0}</p><button id="changeradarbtn" class="btn btn-secondary">Change</button></div></div>`.format(first.name);
     $('#collapseRadar').prepend(html);
     $('#changeradarbtn').on('click',function(e){$('#RadarModal').modal('show');})
     
@@ -207,7 +227,12 @@ App.prototype = {
     
     this.rivers.forEach(river=>{river.stations.forEach(station=>{
         const ncards = station.cards.length;
-        station.cards=station.cards.map((card,i)=>new Card(extend(card,{parent:this.pointer,riverid:river.id,stationid:station.id,cols:(i==0)?4:8/(ncards-1)})),this);
+        station.cards=station.cards.map((card,i)=>new Card(extend(card,
+          {parent:this.pointer,
+          riverid:river.id,
+          stationid:station.id,
+          cols:(ncards==1)?12:(i==0)?4:8/(ncards-1)}
+        )),this);
       stations.push(new Station(extend(station,{parent:this.pointer})));
     },this);},this);
     this.wstations.forEach(station=>{
@@ -236,7 +261,8 @@ App.prototype = {
     this.stations.forEach(station=>{
       station.cards.filter(card=>card.type=='webcam').forEach(card=>{
         const photosbyname = photos.reduce((acc,photo)=>{if(photo.title.includes(card.photoid))acc.push(photo);return acc;},[]);
-        card.updatewebcam(photosbyname[0]);
+        
+        if(photosbyname.length!==0){card.updatewebcam(photosbyname[0]);}
       },this);
     });
     

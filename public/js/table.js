@@ -57,7 +57,7 @@ Table.prototype = {
                     // scrollY:'70vh',
                     autoWidth: true,
                     pageLength: 5,
-                    order: [[ 1, 'asc' ]],
+                    order: [[ 1, 'desc' ]],
                     // scrollCollapse: true,
                     data: this.data,
                     columns: this.getKeys(),
