@@ -18,9 +18,9 @@ const http=require('http');
 require('dotenv').config();
 const KEY=process.env.KEY;
 const CLOUD=process.env.CLOUD;
-const ICEUPLOAD = path.resolve(__dirname,CLOUD,'ice/upload');
-const ICEPROCESS = path.resolve(__dirname,CLOUD,'ice/process');
-const ICETILES = path.resolve(__dirname,CLOUD,'ice/tiles');
+const ICEUPLOAD = path.resolve(CLOUD,'ice/upload');
+const ICEPROCESS = path.resolve(CLOUD,'ice/process');
+const ICETILES = path.resolve(CLOUD,'ice/tiles');
 
 function Webserver(){this.construct();}
 Webserver.prototype = {
@@ -79,7 +79,7 @@ Webserver.prototype = {
   uploadIce:function(){
     const self=this;
     this.app.use(fileUpload());
-    this.app.post('/uploadfile', function(req, res) {
+    this.app.post('/upload', function(req, res) {
       if(!req.query.key)return res.status(400).send('Access key is required');
       if(req.query.key !=KEY)return res.status(400).send('Incorrect access key');
      
