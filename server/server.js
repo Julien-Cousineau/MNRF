@@ -12,13 +12,15 @@ const rastertiles = require('./rastertiles')
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
 
-const ICEUPLOAD = path.resolve(__dirname,'../clouddrive/ice/upload');
-const ICEPROCESS = path.resolve(__dirname,'../clouddrive/ice/process');
-const ICETILES = path.resolve(__dirname,'../clouddrive/ice/tiles');
+
 
 const http=require('http');
 require('dotenv').config();
 const KEY=process.env.KEY;
+const CLOUD=process.env.CLOUD;
+const ICEUPLOAD = path.resolve(__dirname,CLOUD,'ice/upload');
+const ICEPROCESS = path.resolve(__dirname,CLOUD,'ice/process');
+const ICETILES = path.resolve(__dirname,CLOUD,'ice/tiles');
 
 function Webserver(){this.construct();}
 Webserver.prototype = {
