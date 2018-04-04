@@ -2,8 +2,8 @@ const util = require('./util');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
-
-const ICETILES = path.resolve(__dirname,'../clouddrive/ice/tiles');
+const CLOUD=process.env.CLOUD;
+const ICETILES = path.resolve(CLOUD,'ice/tiles');
 
 module.exports = function(name) {
   const tilePattern = '/:name/:z(\\d+)/:x(\\d+)/:y(\\d+).:format([\\w.]+)';
