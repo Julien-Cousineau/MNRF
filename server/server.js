@@ -79,7 +79,7 @@ Webserver.prototype = {
   uploadIce:function(){
     const self=this;
     this.app.use(fileUpload());
-    this.app.post('/upload', function(req, res) {
+    this.app.post('/uploadfile', function(req, res) {
       if(!req.query.key)return res.status(400).send('Access key is required');
       if(req.query.key !=KEY)return res.status(400).send('Incorrect access key');
      
