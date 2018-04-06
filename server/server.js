@@ -22,6 +22,11 @@ const ICEUPLOAD = path.resolve(CLOUD,'ice/upload');
 const ICEPROCESS = path.resolve(CLOUD,'ice/process');
 const ICETILES = path.resolve(CLOUD,'ice/tiles');
 
+const gdalwarp=process.env.gdalwarp;
+const gdal_translate=process.env.gdal_translate;
+const gdal2tiles=process.env.gdal2tiles;
+
+
 function Webserver(){this.construct();}
 Webserver.prototype = {
     construct:function(){
@@ -105,11 +110,11 @@ Webserver.prototype = {
     let vrtfilepath = path.resolve(ICEPROCESS,name +".m.vrt");
     let tilespath = path.resolve(ICETILES,name);
     
-    exec('gdalwarp -overwrite -srcnodata 0 -dstnodata 0 {0} {1}'.format(filepath,processfilepath), (error, stdout, stderr) => {
+    exec('{0} -overwrite -srcnodata 0 -dstnodata 0 {1} {2}'.format(gdalwarp,filepath,processfilepath), (error, stdout, stderr) => {
       if (error) {console.error(`exec error: ${error}`);return;  }
-      exec('gdal_translate -of vrt -expand rgba {0} {1}'.format(processfilepath,vrtfilepath), (error, stdout, stderr) => {
+      exec('{0} -of vrt -expand rgba {1} {2}'.format(gdal_translate,processfilepath,vrtfilepath), (error, stdout, stderr) => {
         if (error) {console.error(`exec error: ${error}`);return;  }
-        exec('gdal2tiles.py --profile=mercator -z 1-14 -a 0 {0} {1}'.format(vrtfilepath,tilespath), (error, stdout, stderr) => {
+        exec('{0} --profile=mercator -z 1-14 -a 0 {1} {2}'.format(gdal2tiles,vrtfilepath,tilespath), (error, stdout, stderr) => {
           if (error) {console.error(`exec error: ${error}`);return;  }
           console.log("TIF2Tiles complete ({0})".format(name));
           fs.unlinkSync(processfilepath);

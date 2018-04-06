@@ -16,7 +16,7 @@ function App(){
       titlel:{'en':" Natural Resources and Forestry",'fr':" Richesses naturelles et des Forêts"},
       titlec:{'en':"Far North Dashboard",'fr':"Tableau de bord du Grand Nord"},
       language:{'en':"Français",'fr':"English"},
-      radarsat:{'en':"Radarsat",fr:"Radarsat"},
+      radarsat:{'en':"Radarsat Ice Condition",fr:"Condition de glace Radarsat"},
       basemap:{'en':"Basemap",fr:"Carte de base"},
       precipitation:{'en':"Precipitation",fr:"Précipitation"},
       icechart:{'en':"Ice Chart",fr:"Carte de glace"},
@@ -106,19 +106,19 @@ function App(){
             // {title:'Gauge',type:'gauge'}
             ]},            
           ]},
-        {id:'attawapiskatriver',title:'Attawapiskat River',active:false,stations:[
+        {id:'attawapiskatriver',title:'Attawapiskat River (Under Construction)',active:false,stations:[
             {title:'Attawapiskat (04FC001)',id:"146273",cards:[
               {title:'camera',type:'webcam',photoid:'04FC001_Attawapiskat_Rv'},
               {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
               ]},
             ]},
-        {id:'mooseriver',title:'Moose River',active:false,stations:[
+        {id:'mooseriver',title:'Moose River (Under Construction)',active:false,stations:[
             {title:'Moose (04LG004)',id:"146658",cards:[
               {title:'camera',type:'webcam',photoid:'04LG004_Moose_Rv'},
               {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
               ]}
             ]},
-        {id:'winiskriver',title:'Winisk River',active:false,stations:[
+        {id:'winiskriver',title:'Winisk River (Under Construction)',active:false,stations:[
             {title:'Winisk (04DC001)',id:"146172",cards:[
               {title:'camera',type:'webcam',photoid:'04DC001_Winisk_Rv'},
               {title:'timeseries',type:'ts',charttype:'ts_2',ts_select:['LVL.1.O','Q.15'],precipid:'131136'},
@@ -189,7 +189,15 @@ App.prototype = {
       
     const first = newlist.find(item=>item.river=="AlbanyRiver");
     func(first.name);
-    const html = `<div class="row"><div class="col-sm-12"><p id="radarlabel">{0}</p><button id="changeradarbtn" class="btn btn-secondary">Change</button></div></div>`.format(first.name);
+    const html = `<div class="row">
+                    <div class="col-sm-7">
+                      <p style="text-align: center;" id="radarlabel">{0}</p>
+                      
+                    </div>
+                     <div class="col-sm-5">
+                     <button id="changeradarbtn" class="btn btn-secondary">Change</button>
+                      </div>
+                  </div>`.format(first.name);
     $('#collapseRadar').prepend(html);
     $('#changeradarbtn').on('click',function(e){$('#RadarModal').modal('show');})
     

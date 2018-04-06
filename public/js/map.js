@@ -359,8 +359,14 @@ Map.prototype = {
         <input type="range" min="1" max="100" value="25" class="slider" id="{0}_slider">
       </div>
       <div class="col-sm-12">
+      <h6 style="text-decoration: underline;">Legend</h6>
+      </div>
+      <div class="col-sm-12">
         <img src="img/{1}.png" id="{0}_img">
       </div>
+      <div class="col-sm-12" style="display: inline;">
+       <p style="display: inline;">source </p><a href="data/IceBreakup_Guide.MNRF.docx">en</a><p style="display: inline;"> / </p><a href="data/Guide_DebacleFluviale.MNRF.MNRF.docx">fr</a>
+      </div>      
     </div>
     `.format(name,img, this.parent.keywords['opacity'][this.parent.language])
   },
