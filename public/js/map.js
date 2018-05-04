@@ -207,7 +207,8 @@ Map.prototype = {
     const json=xml2json(xml);
     // TODO: Hardcode RDPA - > 24P_PR
     // console.log(json);
-    const rdpa = json.WMS_Capabilities.Capability.Layer.Layer.find(layer=>layer.Title['#text']==="Regional Deterministic Precipitation Analysis (RDPA)");
+    // const rdpa = json.WMS_Capabilities.Capability.Layer.Layer.find(layer=>layer.Title['#text']==="Regional Deterministic Precipitation Analysis (RDPA)");
+    const rdpa = json.WMS_Capabilities.Capability.Layer.Layer.find(layer=>layer.Title['#text']==="Precipitation Analysis").Layer.find(layer=>layer.Title['#text']==="Regional Deterministic Precipitation Analysis (RDPA)");
     if(!(rdpa))console.log("Error in finding rdpa layer");
     if(rdpa)this.createTimeSlider(rdpa.Layer[3].Dimension['#text']);
 

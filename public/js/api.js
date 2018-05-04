@@ -32,7 +32,7 @@ Api.prototype = {
     const to = new Date().yyyymmdd();
     // console.log(from,to)
     // &metadata=true&md_returnfields=ts_unitname
-    const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&metadata=true&md_returnfields=ts_unitname&format=dajson&ts_id={0}&from={1}&to={2}'.format(id,from,to);
+    const url = '/KiWIS?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&metadata=true&md_returnfields=ts_unitname&format=dajson&ts_id={0}&from={1}&to={2}&useprecision=false'.format(id,from,to);
     // const url='data/{0}.json'.format(id)
     
     const data = await this.json(url);
@@ -60,7 +60,9 @@ Api.prototype = {
     return await this.json(url);
   },
   getGeoMet:async function(){
-     const url =`https://geo.weather.gc.ca/geomet-beta?service=WMS&version=1.3.0&request=GetCapabilities`;
+    // const url =`https://geo.weather.gc.ca/geomet-beta?service=WMS&version=1.3.0&request=GetCapabilities`;
+    // http://geo.weather.gc.ca/geomet/?lang=E&service=WMS&request=GetCapabilities
+     const url =`https://geo.weather.gc.ca/geomet?service=WMS&version=1.3.0&request=GetCapabilities`;
      return await this.xml(url);
   },
   json:async function(url){

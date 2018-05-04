@@ -8,6 +8,9 @@ const bodyParser = require('body-parser');
 const util = require('./util');
 
 const rastertiles = require('./rastertiles')
+const readChunk = require('read-chunk');
+const isTif = require('is-tif');
+
 
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
@@ -15,6 +18,7 @@ const { exec } = require('child_process');
 
 
 const http=require('http');
+const https=require('https');
 require('dotenv').config();
 const KEY=process.env.KEY;
 const CLOUD=process.env.CLOUD;
@@ -44,10 +48,10 @@ Webserver.prototype = {
     });
    
     app.get('/KiWIS', (req, res) => {
-      const url=`http://204.41.16.133/KiWIS/` + req.originalUrl;
+      const url=`https://www.swmc.mnr.gov.on.ca/KiWIS/` + req.originalUrl;
       
       console.time(req.originalUrl);
-      http.get(url, (_res) => {
+      https.get(url, (_res) => {
         let rawData = '';
         _res.on('data', (chunk) => { rawData += chunk; });
         _res.on('end', () => {
@@ -88,7 +92,7 @@ Webserver.prototype = {
       if(!req.query.key)return res.status(400).send('Access key is required');
       if(req.query.key !=KEY)return res.status(400).send('Incorrect access key');
      
-      if (!req.files) return res.status(400).send('No files were uploaded.');
+      if (!req.files || !req.files.iceFile) return res.status(400).send('No files were uploaded.');
       // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
       let iceFile = req.files.iceFile;
       let name = iceFile.name;
@@ -98,6 +102,7 @@ Webserver.prototype = {
       // Use the mv() method to place the file somewhere on your server
       iceFile.mv(filepath, function(err) {
         if (err) return res.status(500).send(err);
+        if (!isTif(readChunk.sync(filepath, 0, 4)))return res.status(400).send('File is not a tiff file.');
         res.status(200).send('File uploaded!');
         self.processIce(filepath);
       });
