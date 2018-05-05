@@ -1,7 +1,9 @@
+'use strict'
 const util = require('./util');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+
 require('dotenv').config();
 const CLOUD=process.env.CLOUD;
 const ICETILES = path.resolve(CLOUD,'ice/tiles');

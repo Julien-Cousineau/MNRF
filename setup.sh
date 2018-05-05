@@ -3,6 +3,9 @@ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 sudo apt-get update
 sudo apt-get install -y gdal-bin python-gdal 
 
+npm install -g retire
+npm install nsp --global
+
 # for mapnik 
 # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 # sudo apt-get install -y libstdc++-5-dev
@@ -17,3 +20,5 @@ gdalwarp -overwrite /cloud/ice/upload/SevernRiver_2018_03_19.tif /cloud/ice/proc
 /usr/local/bin/gdal2tiles.py --profile=mercator -z 1-14 -a 0 /cloud/ice/process/SevernRiver_2018_03_19.m.vrt /cloud/ice/tiles/SevernRiver_2018_03_19
 
 python /home/julianc/gdal2tiles.py --profile=mercator -z 1-10 -a 0,0,0 /cloud/ice/process/SevernRiver_2018_03_19.m.vrt /cloud/ice/tiles/SevernRiver_2018_03_19
+
+
