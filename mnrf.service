@@ -3,10 +3,10 @@ WorkingDirectory=/opt/MNRF
 ExecStart=/usr/bin/node /opt/MNRF/server/server.js
 Restart=always
 Type=simple
-User=julianc
+User=mnrf
 StandardOutput=mnrf_output.log
 StandardError=mnrf_error.log
-SyslogIdentifier=julianc
+SyslogIdentifier=mnrf
 
 
 [Install]
