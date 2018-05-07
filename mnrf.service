@@ -1,6 +1,6 @@
 [Service]
-WorkingDirectory=/home/julianc/MNRF
-ExecStart=/usr/bin/node /home/julianc/MNRF/server/server.js
+WorkingDirectory=/opt/MNRF
+ExecStart=/usr/bin/node /opt/MNRF/server/server.js
 Restart=always
 Type=simple
 User=julianc
