@@ -67,16 +67,18 @@ Webserver.prototype = {
     return csp({
       // Specify directives as normal.
       directives: {
-        defaultSrc: ["'self'", 'ontario-fnd.ca'],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        //styleSrc: ['style.com'],
-        //fontSrc: ["'self'", 'fonts.com'],
-        imgSrc: ['img.com', 'data:'],
-        sandbox: ['allow-forms', 'allow-scripts'],
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://*.tiles.mapbox.com','https://api.mapbox.com','https://api.flickr.com','https://geo.weather.gc.ca'],
+        scriptSrc: ["'self'","'unsafe-eval'"],
+        styleSrc: ["'self'","'unsafe-inline'"],
+        fontSrc: ["'self'"],
+        childSrc: ["'self'",'blob:'],
+        imgSrc: ["'self'",'data:','blob:','https://c1.staticflickr.com','https://api.flickr.com'],
+        //sandbox: ['allow-forms', 'allow-scripts'],
         reportUri: '/report-violation',
-        objectSrc: ["'none'"],
+        objectSrc: ["'self'"],
         upgradeInsecureRequests: true,
-        workerSrc: false  // This is not set.
+        workerSrc: ["'self'",'blob:'],  // This is not set. 
       },
     
       // This module will detect common mistakes in your directives and throw errors
