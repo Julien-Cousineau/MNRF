@@ -16,7 +16,7 @@ const cookieSes  = require('cookie-session');
 
 const rastertiles = require('./rastertiles');
 const fileUpload  = require('express-fileupload');
-const { exec } = require('child_process');
+const { exec }    = require('child_process');
 
 // const http=require('http');
 const https=require('https');

@@ -1,0 +1,13 @@
+[Service]
+WorkingDirectory=/home/julianc/MNRF
+ExecStart=/usr/bin/node /home/julianc/MNRF/server/server.js
+Restart=always
+Type=simple
+User=julianc
+StandardOutput=mnrf_output.log
+StandardError=mnrf_error.log
+SyslogIdentifier=julianc
+
+
+[Install]
+WantedBy=multi-user.target
